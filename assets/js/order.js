@@ -465,11 +465,11 @@
       }
     };
 
-    /* save to localStorage */
+    /* save to localStorage + Atlas sync */
     try {
-      var orders = JSON.parse(localStorage.getItem("db_orders_v1") || "[]");
+      var orders = DB.getOrders();
       orders.unshift(order);
-      localStorage.setItem("db_orders_v1", JSON.stringify(orders));
+      DB.saveOrders(orders);
     } catch (e) { /* ignore */ }
 
     /* send email notification to shop owner */

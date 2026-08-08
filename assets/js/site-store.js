@@ -19,6 +19,7 @@ window.DB = (function () {
   "use strict";
 
   var KEY = "db_site_v1";
+  var ORDERS_KEY = "db_orders_v1";
   var LS = null;
   try { LS = window.localStorage; } catch (e) { LS = null; }
 
@@ -123,13 +124,33 @@ window.DB = (function () {
     return "legacy:" + h.toString(16);
   }
 
+  /* ---- orders (localStorage + Atlas sync) ---- */
+  function getOrders() {
+    try { return JSON.parse(LS.getItem(ORDERS_KEY) || "[]"); }
+    catch (e) { return []; }
+  }
+
+  function saveOrders(orders) {
+    try { LS.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch (e) {}
+    /* sync to Atlas if connected */
+    if (isConfigured()) {
+      apiRequest("replaceOne", {
+        collection: "orders",
+        filter: { _id: "all" },
+        replacement: { items: orders || [] },
+        upsert: true
+      }).catch(function () {});
+    }
+  }
+
   /* ---- MongoDB Atlas Data API ---- */
   var COLLECTIONS = {
     site: { _id: "main", fields: ["story", "headings", "cats", "hero", "order", "settings"] },
     products: { _id: "all", items: true },
     premium: { _id: "all", items: true },
     reviews: { _id: "all", items: true },
-    faq: { _id: "all", items: true }
+    faq: { _id: "all", items: true },
+    orders: { _id: "all", items: true }
   };
 
   function mongoCfg() {
@@ -251,6 +272,8 @@ window.DB = (function () {
     importJSON: importJSON,
     hash: hash,
     legacyHash: legacyHash,
+    getOrders: getOrders,
+    saveOrders: saveOrders,
     on: function (fn) { listeners.push(fn); return fn; },
     off: function (fn) {
       var i = listeners.indexOf(fn);

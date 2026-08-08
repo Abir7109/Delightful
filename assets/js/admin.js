@@ -254,12 +254,11 @@
 
   /* ---------------- dashboard ---------------- */
   function getOrders() {
-    try { return JSON.parse(localStorage.getItem("db_orders_v1") || "[]"); }
-    catch (e) { return []; }
+    return DB.getOrders();
   }
 
   function saveOrders(orders) {
-    try { localStorage.setItem("db_orders_v1", JSON.stringify(orders)); } catch (e) {}
+    DB.saveOrders(orders);
   }
 
   var ORDER_STATUSES = ["new", "confirmed", "completed", "cancelled"];
