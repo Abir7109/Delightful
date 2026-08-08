@@ -1,50 +1,66 @@
 const crypto = require("crypto");
 
 /* ─── CORS / headers ─── */
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Type": "application/json",
-};
+var ALLOWED_ORIGIN = "https://delightfulcake.netlify.app";
+
+function makeHeaders(extra) {
+  var h = {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+  };
+  if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
+  return h;
+}
 
 /* ─────────────────────────────────────────────────────────
    RATE LIMITER + IP BLOCKER
-   - In-memory store (resets on cold start, but warm instances
-     keep state — enough to catch sustained brute force)
-   - Three tiers: soft block → hard block → permanent ban
+   - Uses Netlify-injected x-nf-client-connection-ip
+     (not spoofable by the client)
+   - Three tiers: soft ban → hard ban → permanent ban
+   - Max-size cap prevents memory exhaustion DoS
    ───────────────────────────────────────────────────────── */
 
-const BLOCKED_IPS   = new Map();   // ip → expiresAt
-const ATTEMPTS      = new Map();   // ip → { first, count, lastFail }
-const SOFT_BANS     = new Map();   // ip → expiresAt  (5-min cooldown)
-const HARD_BANS     = new Map();   // ip → expiresAt  (30-min lockout)
+var BLOCKED_IPS   = new Map();   // ip → expiresAt
+var ATTEMPTS      = new Map();   // ip → { first, count, lastFail }
+var SOFT_BANS     = new Map();   // ip → expiresAt
+var HARD_BANS     = new Map();   // ip → expiresAt
 
-/* windows */
-const SOFT_WINDOW_MS  = 15 * 60 * 1000;   // 15 min attempt window
-const SOFT_BAN_MS     =  5 * 60 * 1000;   // 5 min  after 3 fails
-const HARD_BAN_MS     = 30 * 60 * 1000;   // 30 min after 6 fails
-const PERM_BAN_FAILS  = 10;                // permanent after 10 fails in window
+/* limits */
+var MAX_MAP_SIZE       = 10000;    // hard cap on tracked IPs
+var SOFT_WINDOW_MS     = 15 * 60 * 1000;
+var SOFT_BAN_MS        =  5 * 60 * 1000;
+var HARD_BAN_MS        = 30 * 60 * 1000;
+var PERM_BAN_FAILS     = 10;
+var MAX_ATTEMPTS       = 5;
 
 /* input limits */
-const MAX_USERNAME_LEN = 100;
-const MAX_PASSWORD_LEN = 200;
+var MAX_USERNAME_LEN   = 100;
+var MAX_PASSWORD_LEN   = 200;
 
 /* ─── helpers ─── */
 
 function getClientIp(event) {
   var h = event.headers || {};
 
-  // X-Forwarded-For may be "client, proxy1, proxy2" — take first
+  // Netlify-injected header — not overridable by client
+  var nfIP = h["x-nf-client-connection-ip"];
+  if (nfIP) return String(nfIP).trim();
+
+  // Fallback: take the RIGHTMOST non-private IP from X-Forwarded-For
+  // (Netlify appends its own IP at the end)
   var xff = h["x-forwarded-for"];
   if (xff) {
-    var first = String(xff).split(",")[0].trim();
-    if (first) return first;
+    var parts = String(xff).split(",").map(function (s) { return s.trim(); });
+    for (var i = parts.length - 1; i >= 0; i--) {
+      var ip = parts[i];
+      if (ip && !ip.startsWith("10.") && !ip.startsWith("192.168.") &&
+          !ip.startsWith("172.") && ip !== "127.0.0.1" && ip !== "unknown") {
+        return ip;
+      }
+    }
   }
-
-  // Netlify sometimes sets these
-  if (h["client-ip"])     return h["client-ip"];
-  if (h["x-real-ip"])     return h["x-real-ip"];
 
   return "unknown";
 }
@@ -72,18 +88,30 @@ function isHardBanned(ip) {
   return true;
 }
 
-function getRemaining(ip) {
-  var r = ATTEMPTS.get(ip);
-  if (!r || now() - r.first > SOFT_WINDOW_MS) return 0;
-  return r.count;
+function totalTracked() {
+  return BLOCKED_IPS.size + ATTEMPTS.size + SOFT_BANS.size + HARD_BANS.size;
+}
+
+function evictOldest() {
+  // remove the entry with the oldest timestamp across all maps
+  var oldestKey = null, oldestTime = Infinity, oldestMap = null;
+  [ATTEMPTS, SOFT_BANS, HARD_BANS, BLOCKED_IPS].forEach(function (m) {
+    m.forEach(function (v, k) {
+      var t = (typeof v === "object" && v !== null) ? (v.first || 0) : (v || 0);
+      if (t < oldestTime) { oldestTime = t; oldestKey = k; oldestMap = m; }
+    });
+  });
+  if (oldestMap && oldestKey !== null) oldestMap.delete(oldestKey);
 }
 
 function recordFail(ip) {
+  // enforce max size before creating new entries
+  if (totalTracked() >= MAX_MAP_SIZE) evictOldest();
+
   var r = ATTEMPTS.get(ip);
   var t = now();
 
   if (!r || t - r.first > SOFT_WINDOW_MS) {
-    // fresh window
     ATTEMPTS.set(ip, { first: t, count: 1, lastFail: t });
     return 1;
   }
@@ -91,9 +119,7 @@ function recordFail(ip) {
   r.count++;
   r.lastFail = t;
 
-  // ── escalation tiers ──
   if (r.count >= PERM_BAN_FAILS) {
-    // permanent-ish ban (24h)
     BLOCKED_IPS.set(ip, t + 24 * 60 * 60 * 1000);
     ATTEMPTS.delete(ip);
     return r.count;
@@ -101,44 +127,43 @@ function recordFail(ip) {
 
   if (r.count >= 6 && !HARD_BANS.has(ip)) {
     HARD_BANS.set(ip, t + HARD_BAN_MS);
-    return r.count;
   }
 
   if (r.count >= 3 && !SOFT_BANS.has(ip) && !HARD_BANS.has(ip)) {
     SOFT_BANS.set(ip, t + SOFT_BAN_MS);
-    return r.count;
   }
 
   return r.count;
 }
 
-function clearAttemptsOnSuccess(ip) {
+function clearOnSuccess(ip) {
   ATTEMPTS.delete(ip);
   SOFT_BANS.delete(ip);
   HARD_BANS.delete(ip);
   BLOCKED_IPS.delete(ip);
 }
 
-/* ─── expired-entry cleanup (runs once per request) ─── */
+/* GC — clean expired entries, cap size */
 function gc() {
   var t = now();
-  [BLOCKED_IPS, SOFT_BANS, HARD_BANS, ATTEMPTS].forEach(function (m) {
-    m.forEach(function (v, k) {
-      // ATTEMPTS stores objects, others store expiry timestamps
-      if (typeof v === "object" && v !== null && v.first) {
-        if (t - v.first > SOFT_WINDOW_MS) m.delete(k);
-      } else if (typeof v === "number" && t > v) {
-        m.delete(k);
-      }
-    });
+  [BLOCKED_IPS, SOFT_BANS, HARD_BANS].forEach(function (m) {
+    m.forEach(function (v, k) { if (t > v) m.delete(k); });
   });
+  ATTEMPTS.forEach(function (v, k) {
+    if (t - v.first > SOFT_WINDOW_MS) ATTEMPTS.delete(k);
+  });
+  // hard cap safety net
+  while (totalTracked() > MAX_MAP_SIZE) evictOldest();
 }
 
-/* ─── response helpers ─── */
-function json(status, extra, body) {
-  var hdrs = Object.assign({}, headers, extra || {});
-  return { statusCode: status, headers: hdrs, body: JSON.stringify(body) };
+/* ─── response helper ─── */
+function json(status, hdrs, body) {
+  return { statusCode: status, headers: makeHeaders(hdrs || {}), body: JSON.stringify(body) };
 }
+
+/* ─── generic error (never reveals tier) ─── */
+var GENERIC_AUTH_ERR = "Wrong username or password";
+var GENERIC_LOCK_ERR = "Too many attempts. Please try again later.";
 
 /* ─────────────────────────────────────────────────────────
    HANDLER
@@ -146,48 +171,28 @@ function json(status, extra, body) {
 exports.handler = async (event) => {
   // CORS preflight
   if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers, body: "" };
+    return { statusCode: 204, headers: makeHeaders(), body: "" };
   }
 
   if (event.httpMethod !== "POST") {
     return json(405, {}, { error: "Method not allowed" });
   }
 
-  gc();  // clean up stale entries
+  gc();
 
   var ip = getClientIp(event);
 
-  /* ── tier 1: permanent / hard ban ── */
-  if (isBlocked(ip)) {
-    var blockExp = BLOCKED_IPS.get(ip);
-    var retryBlock = Math.max(1, Math.ceil((blockExp - now()) / 1000));
-    return json(429, { "Retry-After": String(retryBlock) },
-      { error: "Access denied. Try again later." });
+  /* ── check bans (generic error — never reveals which tier) ── */
+  if (isBlocked(ip) || isHardBanned(ip)) {
+    var exp = BLOCKED_IPS.get(ip) || HARD_BANS.get(ip);
+    var retry = Math.max(1, Math.ceil((exp - now()) / 1000));
+    return json(429, { "Retry-After": String(retry) }, { error: GENERIC_LOCK_ERR });
   }
 
-  /* ── tier 2: hard ban (30 min) ── */
-  if (isHardBanned(ip)) {
-    var hardExp = HARD_BANS.get(ip);
-    var retryHard = Math.max(1, Math.ceil((hardExp - now()) / 1000));
-    return json(429, { "Retry-After": String(retryHard) },
-      { error: "Too many failed attempts. Locked out for 30 minutes." });
-  }
-
-  /* ── tier 3: soft ban (5 min cooldown) ── */
   if (isSoftBanned(ip)) {
     var softExp = SOFT_BANS.get(ip);
     var retrySoft = Math.max(1, Math.ceil((softExp - now()) / 1000));
-    return json(429, { "Retry-After": String(retrySoft) },
-      { error: "Too many attempts. Wait 5 minutes." });
-  }
-
-  /* ── tier 4: sliding window check ── */
-  var remaining = getRemaining(ip);
-  if (remaining >= MAX_ATTEMPTS) {
-    // this should normally be caught by soft/hard bans above,
-    // but acts as a safety net
-    return json(429, { "Retry-After": "300" },
-      { error: "Rate limit exceeded. Try again later." });
+    return json(429, { "Retry-After": String(retrySoft) }, { error: GENERIC_LOCK_ERR });
   }
 
   /* ── parse body ── */
@@ -211,7 +216,6 @@ exports.handler = async (event) => {
       return json(400, {}, { error: "Missing credentials" });
     }
 
-    /* input length validation */
     if (username.length > MAX_USERNAME_LEN || password.length > MAX_PASSWORD_LEN) {
       return json(400, {}, { error: "Invalid input" });
     }
@@ -220,9 +224,8 @@ exports.handler = async (event) => {
     if (/<script/i.test(username) || /<script/i.test(password) ||
         /javascript:/i.test(username) || /javascript:/i.test(password) ||
         /\b(or|and)\b\s+\d+\s*=\s*\d+/i.test(username)) {
-      // silently log and reject — don't reveal that we caught them
       recordFail(ip);
-      return json(401, {}, { ok: false, error: "Wrong username or password" });
+      return json(401, {}, { ok: false, error: GENERIC_AUTH_ERR });
     }
 
     var validUser = process.env.ADMIN_USERNAME;
@@ -232,7 +235,7 @@ exports.handler = async (event) => {
       return json(500, {}, { error: "Server auth not configured" });
     }
 
-    /* constant-time comparison to prevent timing attacks */
+    /* constant-time comparison */
     var userBuf  = Buffer.from(username, "utf8");
     var validUBuf = Buffer.from(validUser, "utf8");
     var passBuf  = Buffer.from(password, "utf8");
@@ -244,24 +247,14 @@ exports.handler = async (event) => {
       crypto.timingSafeEqual(passBuf, validPBuf);
 
     if (userMatch && passMatch) {
-      clearAttemptsOnSuccess(ip);
+      clearOnSuccess(ip);
       var token = crypto.randomBytes(32).toString("hex");
       return json(200, {}, { ok: true, token: token });
     }
 
-    /* ── failed login ── */
-    var failCount = recordFail(ip);
-
-    var msg = "Wrong username or password";
-    if (failCount >= PERM_BAN_FAILS) {
-      msg = "Account locked. Contact administrator.";
-    } else if (failCount >= 6) {
-      msg = "Account temporarily locked. Try again in 30 minutes.";
-    } else if (failCount >= 3) {
-      msg = "Too many attempts. Wait 5 minutes.";
-    }
-
-    return json(401, {}, { ok: false, error: msg });
+    /* failed — record and return generic error (no tier info) */
+    recordFail(ip);
+    return json(401, {}, { ok: false, error: GENERIC_AUTH_ERR });
 
   } catch (e) {
     return json(500, {}, { error: "Login failed" });

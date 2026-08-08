@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const FB_PAGE = "https://www.facebook.com/profile.php?id=61569872870733";
+  const FB_PAGE = "https://www.messenger.com/t/61569872870733";
   const TAKA = "\u09F3";
 
   const $ = (s, c) => (c || document).querySelector(s);
@@ -109,7 +109,7 @@
   const priceLbl = (n) => (n == null || isNaN(n)) ? "Price on request" : priceFmt(n);
   const isPremium = () => state.cat === "premium";
   const thumbOf = (item) => item.img
-    ? `<img src="${item.img}" alt="${item.name}" loading="lazy" draggable="false">`
+    ? `<img src="${esc(item.img)}" alt="${esc(item.name)}" loading="lazy" draggable="false">`
     : ICO.cake;
 
   /* ------------------------------------------------------------
@@ -120,8 +120,8 @@
       <button class="cat-tile ${state.cat === c.id ? "is-on" : ""}" data-cat="${c.id}" aria-pressed="${state.cat === c.id}">
         <span class="cat-check" aria-hidden="true">${ICO.check}</span>
         <span class="cat-ico" aria-hidden="true">${c.icon}</span>
-        <span class="cat-name">${c.name}</span>
-        <span class="cat-sub">${c.sub} · ${c.items.length}</span>
+        <span class="cat-name">${esc(c.name)}</span>
+        <span class="cat-sub">${esc(c.sub)} · ${c.items.length}</span>
       </button>
     `).join("");
 
@@ -149,7 +149,7 @@
     div.className = "prod-wrap";
     div.innerHTML = `
       <div class="prod-title">
-        <b>${cat.name}</b>
+        <b>${esc(cat.name)}</b>
         <span>tap to pick</span>
       </div>
       <div class="prod-grid${prem ? " prod-grid--premium" : ""}">
@@ -157,7 +157,7 @@
           <button class="prod-box${prem ? " prod-box--premium" : ""} ${state.item === cat.id + ":" + i ? "is-on" : ""}" data-item="${cat.id}:${i}">
             <span class="prod-ico${prem ? " prod-ico--lg" : ""}" aria-hidden="true">${thumbOf(it)}</span>
             <span class="prod-meta">
-              <span class="prod-name">${it.name}</span>
+              <span class="prod-name">${esc(it.name)}</span>
               <span class="prod-price">${priceLbl(it.price)}</span>
             </span>
           </button>
@@ -213,8 +213,8 @@
     return `
       <span class="prod-ico" aria-hidden="true">${thumbOf(it)}</span>
       <span class="prod-meta">
-        <span class="prod-name">${it.name}</span>
-        <span class="prod-price">${cat.name} · ${priceLbl(it.price)}</span>
+        <span class="prod-name">${esc(it.name)}</span>
+        <span class="prod-price">${esc(cat.name)} · ${priceLbl(it.price)}</span>
       </span>
     `;
   }
@@ -223,7 +223,7 @@
     el.finishRow.innerHTML = FINISHES.map(f => `
       <button class="opt-chip ${state.finish === f.id ? "is-on" : ""}" data-finish="${f.id}" aria-pressed="${state.finish === f.id}">
         <span class="oc-ico" aria-hidden="true">${f.ico}</span>
-        <span>${f.label}</span>
+        <span>${esc(f.label)}</span>
       </button>
     `).join("");
     $$(".opt-chip", el.finishRow).forEach(chip => {
@@ -245,13 +245,15 @@
       el.designThumb.src = d.url;
       el.designFileName.textContent = d.name;
       el.designUploadBox.hidden = false;
+      el.libGrid.hidden = true;
     } else {
       el.designUploadBox.hidden = true;
+      el.libGrid.hidden = false;
     }
 
     el.libGrid.innerHTML = DESIGN_LIBRARY.map((s, i) => `
       <button class="lib-item ${d && d.mode === "lib" && s.img === d.img ? "is-on" : ""}" data-lib="${i}" aria-pressed="${d && d.mode === "lib" && s.img === d.img}">
-        <img src="${s.img}" alt="${s.name}" loading="lazy" draggable="false">
+        <img src="${esc(s.img)}" alt="${esc(s.name)}" loading="lazy" draggable="false">
         <span class="lib-check" aria-hidden="true">${ICO.check}</span>
       </button>
     `).join("");
@@ -282,16 +284,16 @@
       <div class="sum-row">
         <span class="prod-ico" aria-hidden="true">${thumbOf(it)}</span>
         <span>
-          <span class="sum-name">${it.name}</span>
-          <span class="sum-sub">${[cat.name, it.topic].filter(Boolean).join(" \u00b7 ")}</span>
+          <span class="sum-name">${esc(it.name)}</span>
+          <span class="sum-sub">${esc([cat.name, it.topic].filter(Boolean).join(" \u00b7 "))}</span>
         </span>
       </div>
       <div class="sum-lines">
-        <div class="sl"><span>Item</span><b>${it.name}</b></div>
-        ${!prem ? `<div class="sl"><span>Finish</span><b>${finish ? finish.label : "\u2014"}</b></div>` : ""}
+        <div class="sl"><span>Item</span><b>${esc(it.name)}</b></div>
+        ${!prem ? `<div class="sl"><span>Finish</span><b>${esc(finish ? finish.label : "\u2014")}</b></div>` : ""}
         <div class="sl"><span>Design</span><b>${designLbl}</b></div>
         <div class="sl"><span>Quantity</span><b>${state.qty} \u00d7 ${priceLbl(it.price)}</b></div>
-        ${state.msg ? `<div class="sl"><span>Message</span><b>${state.msg}</b></div>` : ""}
+        ${state.msg ? `<div class="sl"><span>Message</span><b>${esc(state.msg)}</b></div>` : ""}
         <div class="sl"><span>Customisation</span><b>Added ${ICO.sparkle}</b></div>
       </div>
       <div class="sum-total">
@@ -482,6 +484,10 @@
   }
 
   function showConfirmation(order) {
+    /* remove existing confirmation if re-submitting */
+    var oldConfirm = document.getElementById("confirmPane");
+    if (oldConfirm) oldConfirm.remove();
+
     var it = order.item;
     var cust = order.customer;
     var priceStr = it.total != null ? "\u09F3" + it.total.toLocaleString("en-IN") : "Price on request";
@@ -490,10 +496,10 @@
     var addrStr = cust.address ? " \u2014 " + cust.address : "";
     var modeStr = cust.mode === "delivery" ? "Delivery" : "Pickup";
     var imgHTML = it.img
-      ? '<img class="ord-confirm-img" src="' + it.img + '" alt="' + it.name + '" loading="lazy">'
+      ? '<img class="ord-confirm-img" src="' + esc(it.img) + '" alt="' + esc(it.name) + '" loading="lazy">'
       : '<div class="ord-confirm-ico">' + ICO.cake + '</div>';
     var dateRow = cust.date
-      ? '<div class="ord-cl-row"><span>Needed by</span><b>' + cust.date + '</b></div>'
+      ? '<div class="ord-cl-row"><span>Needed by</span><b>' + esc(cust.date) + '</b></div>'
       : '';
 
     var confirmPane = document.createElement("section");
@@ -507,15 +513,15 @@
         '<div class="ord-confirm-card">' +
           imgHTML +
           '<div class="ord-confirm-info">' +
-            '<b>' + it.name + '</b>' +
-            '<small>' + it.category + qtyStr + finishStr + '</small>' +
+            '<b>' + esc(it.name) + '</b>' +
+            '<small>' + esc(it.category) + qtyStr + finishStr + '</small>' +
             '<span class="ord-confirm-price">' + priceStr + '</span>' +
           '</div>' +
         '</div>' +
         '<div class="ord-confirm-list">' +
-          '<div class="ord-cl-row"><span>Name</span><b>' + cust.name + '</b></div>' +
-          '<div class="ord-cl-row"><span>Phone</span><b>' + cust.phone + '</b></div>' +
-          '<div class="ord-cl-row"><span>Mode</span><b>' + modeStr + addrStr + '</b></div>' +
+          '<div class="ord-cl-row"><span>Name</span><b>' + esc(cust.name) + '</b></div>' +
+          '<div class="ord-cl-row"><span>Phone</span><b>' + esc(cust.phone) + '</b></div>' +
+          '<div class="ord-cl-row"><span>Mode</span><b>' + modeStr + esc(addrStr) + '</b></div>' +
           dateRow +
         '</div>' +
         '<div class="ord-confirm-actions">' +

@@ -189,7 +189,7 @@ function buildFilters() {
     b.className = "chip" + (t === "All" ? " active" : "");
     b.setAttribute("role", "tab");
     b.setAttribute("aria-selected", t === "All" ? "true" : "false");
-    b.innerHTML = i === 0 ? `All <span class="chip-count">${PRODUCTS.length}</span>` : `${t}<span class="chip-count">${counts[t] || 0}</span>`;
+    b.innerHTML = i === 0 ? `All <span class="chip-count">${PRODUCTS.length}</span>` : `${esc(t)}<span class="chip-count">${counts[t] || 0}</span>`;
     b.addEventListener("click", () => {
       lastFilter = t;
       setFilter(t);
@@ -461,7 +461,7 @@ if (premiumGrid && DB.get("premium").length) {
       <div class="premium-row" data-cols="${cols}">
         ${row.map(({ slot, cake }) => `
           <a class="prem-item" href="order.html" style="grid-area: ${slot.gridArea};" aria-label="Premium cake photo" tabindex="0">
-            <img src="${cake.img}" alt="Premium cake" loading="lazy" draggable="false">
+            <img src="${esc(cake.img)}" alt="Premium cake" loading="lazy" draggable="false">
           </a>
         `).join("")}
       </div>
