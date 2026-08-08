@@ -178,14 +178,20 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: user, password: pass })
     })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        return r.text().then(function (t) {
+          try { return { status: r.status, data: JSON.parse(t) }; }
+          catch (e) { return { status: r.status, data: { error: "Bad response: " + t.slice(0, 120) } }; }
+        });
+      })
       .then(function (res) {
-        if (res.ok) {
-          sessionStorage.setItem(SESSION_KEY, res.token || "1");
+        var d = res.data;
+        if (res.status === 200 && d.ok) {
+          sessionStorage.setItem(SESSION_KEY, d.token || "1");
           showApp();
         } else {
           $("#loginErr").hidden = false;
-          $("#loginErr").textContent = res.error || "Wrong username or password.";
+          $("#loginErr").textContent = d.error || "Wrong username or password.";
         }
         btn.disabled = false;
         btn.textContent = "Sign in";
