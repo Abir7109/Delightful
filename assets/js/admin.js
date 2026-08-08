@@ -18,6 +18,19 @@
   var TAKA = "\u09F3";
 
   var SESSION_KEY = "db_admin_ok";
+  var SESSION_TS_KEY = "db_admin_ts";
+  var SESSION_MAX_MS = 4 * 60 * 60 * 1000; /* 4 hours */
+
+  function isValidSession() {
+    var token = sessionStorage.getItem(SESSION_KEY);
+    var ts = parseInt(sessionStorage.getItem(SESSION_TS_KEY), 10);
+    if (!token || !ts) return false;
+    /* token must be 64 hex chars (crypto.randomBytes(32).toString('hex')) */
+    if (!/^[0-9a-f]{64}$/.test(token)) return false;
+    /* session must not be expired */
+    if (Date.now() - ts > SESSION_MAX_MS) { sessionStorage.clear(); return false; }
+    return true;
+  }
   var HERO_PRESET = "/assets/hero-background-image/bg.jpg";
   var MAX_PRODUCT_IMG = 640;
   var MAX_HERO_IMG = 1600;
@@ -178,23 +191,20 @@
       btn.textContent = "Checking\u2026";
       errEl.hidden = true;
 
-      console.log("[login] calling /.netlify/functions/login ...");
-
       fetch("/.netlify/functions/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass })
       })
         .then(function (resp) {
-          console.log("[login] HTTP", resp.status);
           return resp.text();
         })
         .then(function (txt) {
-          console.log("[login] body:", txt);
           var d;
           try { d = JSON.parse(txt); } catch (e) { d = { error: "Bad response: " + txt.slice(0, 200) }; }
           if (d.ok) {
-            sessionStorage.setItem(SESSION_KEY, d.token || "1");
+            sessionStorage.setItem(SESSION_KEY, d.token || "");
+            sessionStorage.setItem(SESSION_TS_KEY, String(Date.now()));
             showApp();
           } else {
             errEl.hidden = false;
@@ -204,7 +214,6 @@
           btn.textContent = "Sign in";
         })
         .catch(function (err) {
-          console.error("[login] fetch error:", err);
           errEl.hidden = false;
           errEl.textContent = "Could not reach login service. " + (err && err.message ? err.message : "");
           btn.disabled = false;
@@ -215,6 +224,7 @@
 
   $("#logoutBtn").addEventListener("click", function () {
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_TS_KEY);
     location.reload();
   });
 
@@ -909,7 +919,7 @@
     bootErr = e;
   }
 
-  if (sessionStorage.getItem(SESSION_KEY)) {
+  if (isValidSession()) {
     showApp();
     /* auto-refresh orders every 15 seconds */
     setInterval(function () {

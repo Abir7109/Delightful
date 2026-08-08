@@ -12,6 +12,7 @@
   const $ = (s, c) => (c || document).querySelector(s);
   const $$ = (s, c) => Array.prototype.slice.call((c || document).querySelectorAll(s));
   const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 
   /* ------------------------------------------------------------
      SVG ICONS — replacing all emojis

@@ -37,6 +37,7 @@ const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 
 function starSvg() {
   return '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>';
@@ -224,7 +225,7 @@ function priceHTML(p) {
     return '<span class="price wip">Price on request</span>';
   }
   const n = Number(p.price);
-  if (isNaN(n)) return `<span class="price">${p.price}</span>`;
+  if (isNaN(n)) return `<span class="price">${esc(p.price)}</span>`;
   return `<span class="price"><span class="curr">BDT </span>${n.toLocaleString("en-IN")}</span>`;
 }
 
@@ -232,14 +233,14 @@ function cardHTML(p) {
   return `
   <article class="card reveal" data-pid="${p.id}">
     <div class="card-media">
-      <img src="${p.img}" alt="${p.name}" loading="lazy" width="640" height="480" onerror="this.style.opacity=.25">
-      <span class="card-tag">${p.tag}</span>
-      <button class="card-quick" data-quick="${p.id}" aria-label="Quick view ${p.name}">
+      <img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" width="640" height="480" onerror="this.style.opacity=.25">
+      <span class="card-tag">${esc(p.tag)}</span>
+      <button class="card-quick" data-quick="${p.id}" aria-label="Quick view ${esc(p.name)}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
       <div class="card-body">
-        <h3 class="card-title">${p.name}</h3>
-        <p class="card-desc">${p.blurb || p.desc}</p>
+        <h3 class="card-title">${esc(p.name)}</h3>
+        <p class="card-desc">${esc(p.blurb || p.desc)}</p>
         <div class="price-row">${priceHTML(p)}</div>
         <div class="card-foot">
           <button class="order-btn" data-order="${p.name}" aria-label="Order ${p.name}">
@@ -363,7 +364,7 @@ const reviewsGrid = $("#reviewsGrid");
 if (reviewsGrid) {
   const reviewCard = (r) => `
     <figure class="review">
-      <div class="review-photo"><img src="${r.img}" alt="${(r.name || "Happy customer")} — ${r.topic}, customer cake photo" loading="lazy" draggable="false"></div>
+      <div class="review-photo"><img src="${esc(r.img)}" alt="${esc(r.name || "Happy customer")} — ${esc(r.topic)}, customer cake photo" loading="lazy" draggable="false"></div>
     </figure>
   `;
   /* column count must mirror the CSS breakpoint: 4 columns above 1020px,
@@ -497,7 +498,7 @@ function applySiteData() {
     if (H[el.dataset.hEyebrow]) el.textContent = H[el.dataset.hEyebrow];
   });
   $$("[data-h-title]").forEach(el => {
-    if (H[el.dataset.hTitle]) el.innerHTML = H[el.dataset.hTitle];
+    if (H[el.dataset.hTitle]) el.innerHTML = esc(H[el.dataset.hTitle]);
   });
 
   /* categories row — rebuilt from data */
@@ -506,10 +507,10 @@ function applySiteData() {
   if (catsRow && cats.length) {
     catsRow.innerHTML = cats.map(c => `
       <a class="cat-card reveal" href="#menu" data-scroll>
-        <img src="${c.img}" alt="${c.imgAlt || c.title}" loading="lazy">
+        <img src="${esc(c.img)}" alt="${esc(c.imgAlt || c.title)}" loading="lazy">
         <div class="cat-info">
-          <h3>${c.title}</h3>
-          <span class="cat-link">${c.link} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>${esc(c.title)}</h3>
+          <span class="cat-link">${esc(c.link)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </div>
       </a>
     `).join("");
@@ -525,11 +526,11 @@ function applySiteData() {
   const lead = $("#storyLead"); if (lead && st.lead) lead.textContent = st.lead;
   const paras = $("#storyParas");
   if (paras && st.paragraphs && st.paragraphs.length) {
-    paras.innerHTML = st.paragraphs.map(p => `<p>${p}</p>`).join("");
+    paras.innerHTML = st.paragraphs.map(p => `<p>${esc(p)}</p>`).join("");
   }
   const facts = $("#storyFacts");
   if (facts && st.facts && st.facts.length) {
-    facts.innerHTML = st.facts.map(f => `<div class="cell"><b>${f.b}</b><small>${f.small}</small></div>`).join("");
+    facts.innerHTML = st.facts.map(f => `<div class="cell"><b>${esc(f.b)}</b><small>${esc(f.small)}</small></div>`).join("");
   }
   const sigN = $("#storySigName"); if (sigN && st.sigName) sigN.textContent = st.sigName;
   const sigR = $("#storySigRole"); if (sigR && st.sigRole) sigR.textContent = st.sigRole;
@@ -556,11 +557,11 @@ function buildFaq() {
   accordion.innerHTML = DB.get("faq").map((f, i) => `
     <div class="acc-item${i === 0 ? " open" : ""}">
       <button class="acc-btn" type="button" aria-expanded="${i === 0 ? "true" : "false"}">
-        ${f.q}
+        ${esc(f.q)}
         <span class="acc-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
       </button>
       <div class="acc-panel">
-        <div class="acc-panel-inner">${f.a}</div>
+        <div class="acc-panel-inner">${esc(f.a)}</div>
       </div>
     </div>
   `).join("");
