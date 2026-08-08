@@ -40,6 +40,12 @@ window.DB = (function () {
     return window.DB_DEFAULTS || {};
   }
 
+  /* strip leftover <em> tags from heading values (legacy data cleanup) */
+  function stripEmTags(val) {
+    if (typeof val !== "string") return val;
+    return val.replace(/<\/?em>/g, "");
+  }
+
   function merged() {
     var d = defaults();
     var o = readLS();
@@ -47,6 +53,12 @@ window.DB = (function () {
     if (!data) return d;
     var out = {};
     Object.keys(d).forEach(function (k) { out[k] = data[k] !== undefined ? data[k] : d[k]; });
+    /* sanitize headings — remove any <em> tags stored from old defaults */
+    if (out.headings && typeof out.headings === "object") {
+      Object.keys(out.headings).forEach(function (k) {
+        out.headings[k] = stripEmTags(out.headings[k]);
+      });
+    }
     return out;
   }
 

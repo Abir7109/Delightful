@@ -162,18 +162,18 @@ window.DB_DEFAULTS = {
 
     headings: {
       premiumKicker: "Signature tier",
-      premiumTitle: "Premium <em>cakes</em>",
+      premiumTitle: "Premium cakes",
       menuEyebrow: "This week's bake",
-      menuTitle: "Pick your favourite, <em>we'll bake it fresh</em> for you",
+      menuTitle: "Pick your favourite, we'll bake it fresh for you",
       catsEyebrow: "From savoury to sweet",
       catsTitle: "What we bake & cook",
       storyEyebrow: "Behind the brand",
       reviewsEyebrow: "Sweet reviews",
-      reviewsTitle: "What our happy <em>customers say</em>",
+      reviewsTitle: "What our happy customers say",
       faqEyebrow: "Good to know",
-      faqTitle: "Questions, <em>answered</em>",
+      faqTitle: "Questions, answered",
       processEyebrow: "The process",
-      processTitle: "How to <em>get your cake</em>"
+      processTitle: "How to get your cake"
     },
 
   hero: {
