@@ -155,6 +155,7 @@
   function showApp() {
     $("#loginView").hidden = true;
     $("#appView").hidden = false;
+    window.scrollTo(0, 0);
     data = clone(DB.get());
     renderAll();
     updateSavedAt();
