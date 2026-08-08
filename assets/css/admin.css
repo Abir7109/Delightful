@@ -32,6 +32,7 @@ body {
 
 /* ============ LOGIN ============ */
 #loginView[hidden] { display: none !important; }
+#appView[hidden] { display: none !important; }
 .adm-login {
   min-height: 100vh;
   display: grid;
