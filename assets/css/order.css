@@ -137,7 +137,6 @@ body::before {
 
 .ord-hello { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 20px; position: relative; }
 .ord-hello h1 { font-family: var(--font-display); font-size: clamp(26px, 6vw, 34px); font-weight: 650; line-height: 1.12; letter-spacing: -.01em; }
-.ord-hello h1 em { font-style: italic; color: var(--caramel-deep); }
 .ord-hello p { color: var(--cocoa-soft); font-size: 14.5px; }
 .ord-back {
   position: absolute; right: 0; top: 0;
@@ -550,7 +549,6 @@ body::before {
   font-family: var(--font-display); font-size: 24px;
   margin: 0 0 4px; letter-spacing: -0.02em;
 }
-.ord-confirm-title em { font-style: italic; color: var(--caramel); }
 .ord-confirm-sub { color: var(--cocoa-soft); margin: 0 0 16px; font-size: 13px; }
 
 .ord-confirm-card {
