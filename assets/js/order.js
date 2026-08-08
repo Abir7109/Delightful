@@ -483,53 +483,31 @@
   function showConfirmation(order) {
     var it = order.item;
     var cust = order.customer;
-    var date = new Date(order.timestamp);
-    var timeStr = date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    var priceStr = it.total != null ? "\u09F3" + it.total.toLocaleString("en-IN") : "Price on request";
 
     var confirmPane = document.createElement("section");
     confirmPane.className = "ord-pane is-active ord-confirm-pane";
     confirmPane.id = "confirmPane";
     confirmPane.innerHTML = `
       <div class="ord-confirm">
-        <div class="ord-confirm-badge">
-          <div class="ord-confirm-icon">${ICO.confirm}</div>
-        </div>
+        <div class="ord-confirm-check">${ICO.confirm}</div>
         <h1 class="ord-confirm-title">Order <em>received</em></h1>
-        <p class="ord-confirm-sub">We\u2019ll review your order and get back to you on Messenger or phone.</p>
+        <p class="ord-confirm-sub">We'll review and reply on Messenger or phone.</p>
 
         <div class="ord-confirm-card">
-          ${it.img ? '<div class="ord-confirm-img-wrap"><img class="ord-confirm-img" src="' + it.img + '" alt="' + it.name + '" loading="lazy"></div>' : '<div class="ord-confirm-ico">' + ICO.cake + '</div>'}
-          <div class="ord-confirm-meta">
-            <b class="ord-confirm-item-name">' + it.name + '</b>
-            <span class="ord-confirm-item-cat">' + it.category + (it.qty > 1 ? " \u00d7 " + it.qty : "") + '</span>
-            ${it.finish ? '<span class="ord-confirm-item-detail">' + ICO.sparkle + ' ' + it.finish + '</span>' : ""}
-            <span class="ord-confirm-price">' + (it.total != null ? TAKA + it.total.toLocaleString("en-IN") : "Price on request") + '</span>
+          ${it.img ? '<img class="ord-confirm-img" src="' + it.img + '" alt="' + it.name + '" loading="lazy">' : '<div class="ord-confirm-ico">' + ICO.cake + '</div>'}
+          <div class="ord-confirm-info">
+            <b>' + it.name + '</b>
+            <small>' + it.category + (it.qty > 1 ? " x" + it.qty : "") + (it.finish ? " — " + it.finish : "") + '</small>
+            <span class="ord-confirm-price">' + priceStr + '</span>
           </div>
         </div>
 
-        <div class="ord-confirm-contact-grid">
-          <div class="ord-contact-card">
-            <span class="ord-contact-icon">${ICO.phone}</span>
-            <span class="ord-contact-label">Phone</span>
-            <b>${cust.phone}</b>
-          </div>
-          <div class="ord-contact-card">
-            <span class="ord-contact-icon">${cust.mode === "delivery" ? ICO.truck : ICO.home}</span>
-            <span class="ord-contact-label">${cust.mode === "delivery" ? "Delivery" : "Pickup"}</span>
-            <b>${cust.address || "Collect from shop"}</b>
-          </div>
-          ${cust.date ? '<div class="ord-contact-card"><span class="ord-contact-icon">' + ICO.calendar + '</span><span class="ord-contact-label">Needed by</span><b>' + cust.date + '</b></div>' : ""}
-          <div class="ord-contact-card">
-            <span class="ord-contact-icon">${ICO.edit}</span>
-            <span class="ord-contact-label">Name</span>
-            <b>${cust.name}</b>
-          </div>
-        </div>
-
-        <div class="ord-confirm-id">
-          <span>Order ID</span>
-          <code>${order.id}</code>
-          <span>${timeStr}</span>
+        <div class="ord-confirm-list">
+          <div class="ord-cl-row"><span>Name</span><b>' + cust.name + '</b></div>
+          <div class="ord-cl-row"><span>Phone</span><b>' + cust.phone + '</b></div>
+          <div class="ord-cl-row"><span>Mode</span><b>' + (cust.mode === "delivery" ? "Delivery" : "Pickup") + (cust.address ? " — " + cust.address : "") + '</b></div>
+          ${cust.date ? '<div class="ord-cl-row"><span>Needed by</span><b>' + cust.date + '</b></div>' : ""}
         </div>
 
         <div class="ord-confirm-actions">
