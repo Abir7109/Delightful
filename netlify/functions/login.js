@@ -15,14 +15,31 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { username, password } = JSON.parse(event.body || "{}");
-
-    if (!username || !password) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing credentials" }) };
+    var body = event.body || "";
+    if (event.isBase64Encoded) {
+      body = Buffer.from(body, "base64").toString("utf8");
     }
 
-    const validUser = process.env.ADMIN_USERNAME;
-    const validPass = process.env.ADMIN_PASSWORD;
+    var params = {};
+    try {
+      params = JSON.parse(body);
+    } catch (e) {
+      // try form-urlencoded fallback
+      body.split("&").forEach(function (pair) {
+        var kv = pair.split("=");
+        if (kv.length === 2) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
+      });
+    }
+
+    var username = params.username || "";
+    var password = params.password || "";
+
+    if (!username || !password) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing credentials", got: Object.keys(params) }) };
+    }
+
+    var validUser = process.env.ADMIN_USERNAME;
+    var validPass = process.env.ADMIN_PASSWORD;
 
     if (!validUser || !validPass) {
       return { statusCode: 500, headers, body: JSON.stringify({ error: "Server auth not configured" }) };
@@ -38,6 +55,6 @@ exports.handler = async (event) => {
 
     return { statusCode: 401, headers, body: JSON.stringify({ ok: false, error: "Wrong username or password" }) };
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: "Login failed" }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: "Login failed: " + e.message }) };
   }
 };
