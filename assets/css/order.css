@@ -526,16 +526,16 @@ body::before {
 .btn-ord--outline svg { width: 18px; height: 18px; }
 
 /* ---------- premium product grid ---------- */
-.prod-grid--premium { grid-template-columns: 1fr !important; gap: 14px; }
+.prod-grid--premium { grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
 .prod-box--premium {
-  flex-direction: row; align-items: center; gap: 14px;
-  padding: 14px;
+  flex-direction: column; align-items: stretch; gap: 0;
+  padding: 0; overflow: hidden; border-radius: 14px;
 }
-.prod-ico--lg { width: 100% !important; height: 180px !important; border-radius: 14px !important; }
-.prod-ico--lg img { border-radius: 14px !important; height: 180px !important; }
-.prod-box--premium .prod-meta { padding: 4px 0; }
-.prod-box--premium .prod-name { font-size: 15px; }
-.prod-box--premium .prod-price { font-size: 14px; }
+.prod-ico--lg { width: 100% !important; height: 0 !important; padding-bottom: 100% !important; border-radius: 0 !important; position: relative; }
+.prod-ico--lg img { position: absolute; inset: 0; width: 100% !important; height: 100% !important; border-radius: 0 !important; object-fit: cover; }
+.prod-box--premium .prod-meta { padding: 10px; }
+.prod-box--premium .prod-name { font-size: 12px; line-height: 1.2; }
+.prod-box--premium .prod-price { font-size: 12px; margin-top: 2px; }
 
 /* ---------- confirmation screen ---------- */
 .ord-confirm-pane { padding-top: 10px; }
