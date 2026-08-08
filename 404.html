@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — Delightful Baking &amp; Cooking</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --ink: #241A12; --cocoa: #5C4033; --cocoa-soft: #8B7160;
+      --caramel: #B98952; --rose: #EFDCC3; --paper: #FFF9F1;
+      --card: #FFFDF8; --line: rgba(36,26,18,.08);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'Manrope', system-ui, sans-serif;
+    }
+    body {
+      font-family: var(--font-body); background: var(--paper);
+      color: var(--ink); min-height: 100dvh;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 24px; text-align: center;
+    }
+    .fouro-four { max-width: 400px; }
+    .fouro-four-num {
+      font-family: var(--font-display); font-size: clamp(72px, 18vw, 120px);
+      font-weight: 700; line-height: 1; color: var(--caramel);
+      letter-spacing: -0.04em; margin-bottom: 8px;
+    }
+    .fouro-four h1 {
+      font-family: var(--font-display); font-size: clamp(22px, 5vw, 30px);
+      font-weight: 600; margin-bottom: 8px;
+    }
+    .fouro-four h1 em { font-style: italic; color: var(--caramel); }
+    .fouro-four p {
+      color: var(--cocoa-soft); font-size: 15px; line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .fouro-four-links { display: flex; flex-direction: column; gap: 10px; }
+    .fouro-four-links a {
+      display: block; padding: 14px 20px; border-radius: 12px;
+      font-weight: 700; font-size: 15px; text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .fouro-four-links a:active { transform: scale(.97); }
+    .fouro-four-primary {
+      background: var(--ink); color: #fff;
+      box-shadow: 0 4px 16px -4px rgba(36,26,18,.25);
+    }
+    .fouro-four-primary:hover { box-shadow: 0 6px 24px -4px rgba(36,26,18,.3); }
+    .fouro-four-outline {
+      background: transparent; color: var(--ink);
+      border: 1.5px solid var(--line);
+    }
+    .fouro-four-outline:hover { background: var(--card); }
+    .fouro-four-emoji { font-size: 48px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="fouro-four">
+    <div class="fouro-four-emoji">🧁</div>
+    <div class="fouro-four-num">404</div>
+    <h1>This page <em>crumbled</em> away</h1>
+    <p>Looks like this page doesn't exist anymore. Let's get you back to something sweet.</p>
+    <div class="fouro-four-links">
+      <a class="fouro-four-primary" href="/">Back to home</a>
+      <a class="fouro-four-outline" href="/order.html">Order a cake</a>
+    </div>
+  </div>
+</body>
+</html>
