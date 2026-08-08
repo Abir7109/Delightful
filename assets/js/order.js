@@ -484,42 +484,48 @@
     var it = order.item;
     var cust = order.customer;
     var priceStr = it.total != null ? "\u09F3" + it.total.toLocaleString("en-IN") : "Price on request";
+    var qtyStr = it.qty > 1 ? " x" + it.qty : "";
+    var finishStr = it.finish ? " \u2014 " + it.finish : "";
+    var addrStr = cust.address ? " \u2014 " + cust.address : "";
+    var modeStr = cust.mode === "delivery" ? "Delivery" : "Pickup";
+    var imgHTML = it.img
+      ? '<img class="ord-confirm-img" src="' + it.img + '" alt="' + it.name + '" loading="lazy">'
+      : '<div class="ord-confirm-ico">' + ICO.cake + '</div>';
+    var dateRow = cust.date
+      ? '<div class="ord-cl-row"><span>Needed by</span><b>' + cust.date + '</b></div>'
+      : '';
 
     var confirmPane = document.createElement("section");
     confirmPane.className = "ord-pane is-active ord-confirm-pane";
     confirmPane.id = "confirmPane";
-    confirmPane.innerHTML = `
-      <div class="ord-confirm">
-        <div class="ord-confirm-check">${ICO.confirm}</div>
-        <h1 class="ord-confirm-title">Order <em>received</em></h1>
-        <p class="ord-confirm-sub">We'll review and reply on Messenger or phone.</p>
-
-        <div class="ord-confirm-card">
-          ${it.img ? '<img class="ord-confirm-img" src="' + it.img + '" alt="' + it.name + '" loading="lazy">' : '<div class="ord-confirm-ico">' + ICO.cake + '</div>'}
-          <div class="ord-confirm-info">
-            <b>' + it.name + '</b>
-            <small>' + it.category + (it.qty > 1 ? " x" + it.qty : "") + (it.finish ? " — " + it.finish : "") + '</small>
-            <span class="ord-confirm-price">' + priceStr + '</span>
-          </div>
-        </div>
-
-        <div class="ord-confirm-list">
-          <div class="ord-cl-row"><span>Name</span><b>' + cust.name + '</b></div>
-          <div class="ord-cl-row"><span>Phone</span><b>' + cust.phone + '</b></div>
-          <div class="ord-cl-row"><span>Mode</span><b>' + (cust.mode === "delivery" ? "Delivery" : "Pickup") + (cust.address ? " — " + cust.address : "") + '</b></div>
-          ${cust.date ? '<div class="ord-cl-row"><span>Needed by</span><b>' + cust.date + '</b></div>' : ""}
-        </div>
-
-        <div class="ord-confirm-actions">
-          <a class="btn-ord btn-ord--primary" href="index.html" style="text-decoration:none;text-align:center;display:block">
-            ${ICO.home} Back to home
-          </a>
-          <a class="btn-ord btn-ord--outline" href="${FB_PAGE}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;display:block">
-            ${ICO.send} Chat on Messenger
-          </a>
-        </div>
-      </div>
-    `;
+    confirmPane.innerHTML =
+      '<div class="ord-confirm">' +
+        '<div class="ord-confirm-check">' + ICO.confirm + '</div>' +
+        '<h1 class="ord-confirm-title">Order <em>received</em></h1>' +
+        '<p class="ord-confirm-sub">We\'ll review and reply on Messenger or phone.</p>' +
+        '<div class="ord-confirm-card">' +
+          imgHTML +
+          '<div class="ord-confirm-info">' +
+            '<b>' + it.name + '</b>' +
+            '<small>' + it.category + qtyStr + finishStr + '</small>' +
+            '<span class="ord-confirm-price">' + priceStr + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ord-confirm-list">' +
+          '<div class="ord-cl-row"><span>Name</span><b>' + cust.name + '</b></div>' +
+          '<div class="ord-cl-row"><span>Phone</span><b>' + cust.phone + '</b></div>' +
+          '<div class="ord-cl-row"><span>Mode</span><b>' + modeStr + addrStr + '</b></div>' +
+          dateRow +
+        '</div>' +
+        '<div class="ord-confirm-actions">' +
+          '<a class="btn-ord btn-ord--primary" href="index.html" style="text-decoration:none;text-align:center;display:block">' +
+            ICO.home + ' Back to home' +
+          '</a>' +
+          '<a class="btn-ord btn-ord--outline" href="' + FB_PAGE + '" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;display:block">' +
+            ICO.send + ' Chat on Messenger' +
+          '</a>' +
+        '</div>' +
+      '</div>';
 
     /* hide all existing panes, step nav, bar */
     el.panes.forEach(p => p.classList.remove("is-active"));
