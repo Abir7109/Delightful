@@ -151,14 +151,7 @@
       "</div>";
   }
 
-  /* ---------------- login ---------------- */
-  function tryLogin() {
-    if (sessionStorage.getItem(SESSION_KEY) === "1") {
-      showApp();
-      return;
-    }
-  }
-
+  /* ---------------- login (Netlify Function) ---------------- */
   function showApp() {
     $("#loginView").hidden = true;
     $("#appView").hidden = false;
@@ -178,32 +171,31 @@
     var btn = $("#loginBtn");
     btn.disabled = true;
     btn.textContent = "Checking…";
-    DB.hash(pass).then(function (h) {
-      var s = DB.get("settings") || {};
-      var dd = (DB.defaults().settings || {});
-      var ok = false;
-      [s, dd].forEach(function (set) {
-        if (!set) return;
-        var leg = set.adminHashLegacy && h === "legacy:" + String(set.adminHashLegacy).replace(/^legacy:/, "");
-        if (user === set.adminUser && (h === set.adminHash || leg)) ok = true;
-      });
-      if (ok) {
-        sessionStorage.setItem(SESSION_KEY, "1");
-        showApp();
-      } else {
-        var dbg = "user: '" + user + "' vs stored '" + String(s.adminUser) + "' | hash: " + h.slice(0, 12) + "… vs stored " + String(s.adminHash).slice(0, 12) + "…";
+    $("#loginErr").hidden = true;
+
+    fetch("/.netlify/functions/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: user, password: pass })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res.ok) {
+          sessionStorage.setItem(SESSION_KEY, res.token || "1");
+          showApp();
+        } else {
+          $("#loginErr").hidden = false;
+          $("#loginErr").textContent = res.error || "Wrong username or password.";
+        }
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+      })
+      .catch(function (err) {
         $("#loginErr").hidden = false;
-        $("#loginErr").textContent = "Wrong username or password. (" + dbg + ")";
-        console.warn("Admin login failed:", { user: user, hash: h, stored: s, defaults: dd });
-      }
-      btn.disabled = false;
-      btn.textContent = "Sign in";
-    }).catch(function (e) {
-      $("#loginErr").hidden = false;
-      $("#loginErr").textContent = "Login check failed: " + (e && e.message ? e.message : "unknown");
-      btn.disabled = false;
-      btn.textContent = "Sign in";
-    });
+        $("#loginErr").textContent = "Login failed: " + (err && err.message ? err.message : "network error");
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+      });
   });
 
   $("#logoutBtn").addEventListener("click", function () {
@@ -631,9 +623,6 @@
     $("#heroBgPrev").src = h.bg || "";
     $("#heroBgPrev").classList.toggle("placeholder", !h.bg);
     var s = data.settings;
-    $("#setUser").value = s.adminUser || "";
-    $("#setPass").value = "";
-    $("#setPass2").value = "";
     $("#mUrl").value = s.dataApiUrl || "";
     $("#mKey").value = s.apiKey || "";
     $("#mDs").value = s.dataSource || "";
@@ -661,32 +650,6 @@
       saveData(); renderSettings();
       toast("Restored the default hero background");
     });
-
-    $("#saveCredsBtn").addEventListener("click", function () {
-      var user = $("#setUser").value.trim();
-      var p1 = $("#setPass").value;
-      var p2 = $("#setPass2").value;
-      if (!user) return toast("Username can't be empty", true);
-      if (p1 !== p2) return toast("Passwords don't match", true);
-      data.settings.adminUser = user;
-      if (p1) {
-        var salt = data.settings.adminSalt || "dbc-admin-v1";
-        data.settings.adminHashLegacy = DB.legacyHash(salt + p1).replace(/^legacy:/, "");
-        DB.hash(p1).then(function (h) {
-          data.settings.adminHash = h;
-          finishCreds();
-        }).catch(function () {
-          data.settings.adminHash = "legacy:" + data.settings.adminHashLegacy;
-          finishCreds();
-        });
-      } else finishCreds();
-    });
-
-    function finishCreds() {
-      saveData();
-      renderSettings();
-      toast("Credentials updated");
-    }
 
     function readMongoFields() {
       data.settings.dataApiUrl = $("#mUrl").value.trim();
@@ -789,7 +752,7 @@
     bootErr = e;
   }
 
-  if (sessionStorage.getItem(SESSION_KEY) === "1") {
+  if (sessionStorage.getItem(SESSION_KEY)) {
     showApp();
   } else {
     $("#loginView").hidden = false;

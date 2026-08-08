@@ -279,10 +279,6 @@ window.DB_DEFAULTS = {
   },
 
   settings: {
-    adminUser: "nijhum",
-    adminSalt: "dbc-admin-v1",
-    adminHash: "a07b8cd6dd3cbba52d57bd5f495d5d4f34e1dbddde4d609fd583312c8726048d",
-    adminHashLegacy: "cdae3d3f",
     dataApiUrl: "",
     apiKey: "",
     dataSource: "",

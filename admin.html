@@ -232,13 +232,7 @@
 
         <div class="adm-card">
           <h3>Admin credentials</h3>
-          <p class="adm-muted">Changing these updates the login for this panel.</p>
-          <div class="adm-fields">
-            <label class="adm-f"><span>Username</span><input type="text" id="setUser" autocomplete="off"></label>
-            <label class="adm-f"><span>New password (leave blank to keep)</span><input type="password" id="setPass" autocomplete="new-password"></label>
-            <label class="adm-f"><span>Confirm password</span><input type="password" id="setPass2" autocomplete="new-password"></label>
-          </div>
-          <button class="adm-btn" id="saveCredsBtn" type="button">Update credentials</button>
+          <p class="adm-muted">Managed via Netlify environment variables (<code>ADMIN_USERNAME</code> and <code>ADMIN_PASSWORD</code>). Update them in your Netlify dashboard → Site settings → Environment variables.</p>
         </div>
 
         <div class="adm-card">
