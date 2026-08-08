@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const FB_PAGE = "https://www.facebook.com/messages/t/delightfulbakingandcooking";
+  const FB_PAGE = "https://www.facebook.com/profile.php?id=61569872870733";
   const TAKA = "\u09F3";
 
   const $ = (s, c) => (c || document).querySelector(s);

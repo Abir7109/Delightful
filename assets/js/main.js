@@ -27,7 +27,7 @@ const PRODUCT_RECORDS = DB.get("products");
 
 const PRODUCTS = PRODUCT_RECORDS.map((p, i) => ({ ...p, id: i }));
 
-const FB_PAGE = "https://www.facebook.com/messages/t/delightfulbakingandcooking";
+const FB_PAGE = "https://www.facebook.com/profile.php?id=61569872870733";
 const PAGE_NAME = "Delightful Baking & Cooking";
 
 /* ------------------------------------------------------------
