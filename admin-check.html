@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin login check</title>
+  <style>
+    body { font: 14px/1.6 Consolas, monospace; background: #1d1d1d; color: #e8e8e8; padding: 24px; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 18px; }
+    pre { background: #111; border: 1px solid #444; padding: 14px; border-radius: 8px; white-space: pre-wrap; }
+    .ok { color: #7dd87d; } .bad { color: #ff7a7a; }
+    input { padding: 8px; margin: 4px 0; width: 260px; background: #111; color: #eee; border: 1px solid #555; }
+    button { padding: 8px 16px; margin: 6px 4px 0 0; }
+  </style>
+</head>
+<body>
+  <h1>Admin login diagnostic</h1>
+  <pre id="out">Loading scripts…</pre>
+
+  <label>Test password: <input type="text" id="pw" value="nijhumsbake123"></label>
+  <label>Test username: <input type="text" id="un" value="nijhum"></label>
+  <button id="run">Test login</button>
+
+  <script src="assets/data/premium.js?v=4"></script>
+  <script src="assets/data/site-data.js?v=4"></script>
+  <script src="assets/js/site-store.js?v=4"></script>
+  <script>
+    var out = document.getElementById("out");
+    function line(s, cls) {
+      out.innerHTML += (cls ? '<span class="' + cls + '">' : "") + String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;") + (cls ? "</span>" : "") + "\n";
+    }
+
+    window.addEventListener("error", function (ev) {
+      line("JS ERROR: " + ev.message + " @ " + (ev.filename || "").split("/").pop() + ":" + ev.lineno, "bad");
+    });
+
+    function printState() {
+      out.innerHTML = "";
+      line("secure context (crypto.subtle): " + !!(window.crypto && window.crypto.subtle));
+      line("DB loaded: " + !!window.DB, window.DB ? "ok" : "bad");
+      if (!window.DB) return;
+      var m = window.DB.get("settings") || {};
+      var d = (window.DB.defaults().settings || {});
+      line("--- stored (overlay) settings ---");
+      line("adminUser:   '" + m.adminUser + "'");
+      line("adminSalt:   '" + m.adminSalt + "'");
+      line("adminHash:   '" + String(m.adminHash).slice(0, 16) + "…' (" + String(m.adminHash).length + " chars)");
+      line("adminHashLegacy: '" + String(m.adminHashLegacy) + "'");
+      line("--- baked-in defaults ---");
+      line("adminUser:   '" + d.adminUser + "'");
+      line("adminSalt:   '" + d.adminSalt + "'");
+      line("adminHash:   '" + String(d.adminHash).slice(0, 16) + "…' (" + String(d.adminHash).length + " chars)");
+      line("adminHashLegacy: '" + String(d.adminHashLegacy) + "'");
+      line("--- localStorage ---");
+      line("db_site_v1 exists: " + (!!localStorage.getItem("db_site_v1")), localStorage.getItem("db_site_v1") ? "bad" : "ok");
+      line("sessionStorage db_admin_ok: '" + String(sessionStorage.getItem("db_admin_ok")) + "'");
+    }
+
+    document.getElementById("run").addEventListener("click", function () {
+      var un = document.getElementById("un").value.trim();
+      var pw = document.getElementById("pw").value;
+      out.innerHTML = "";
+      line("Typed user: '" + un + "'   typed pass: '" + pw + "'");
+      printState();
+      window.DB.hash(pw).then(function (h) {
+        var s = window.DB.get("settings") || {};
+        var dd = (window.DB.defaults().settings || {});
+        var ok = false;
+        [s, dd].forEach(function (set) {
+          if (!set) return;
+          var leg = set.adminHashLegacy && h === "legacy:" + String(set.adminHashLegacy).replace(/^legacy:/, "");
+          if (un === set.adminUser && (h === set.adminHash || leg)) ok = true;
+        });
+        line("--- computed ---");
+        line("your hash:   '" + h + "'");
+        line("login result: " + (ok ? "WOULD LOG IN" : "REJECTED"), ok ? "ok" : "bad");
+      }).catch(function (e) {
+        line("hash() FAILED: " + (e && e.message ? e.message : e), "bad");
+      });
+    });
+
+    printState();
+  </script>
+</body>
+</html>

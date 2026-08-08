@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Order — Delightful Baking &amp; Cooking</title>
+  <meta name="description" content="Order a custom cake from Delightful Baking &amp; Cooking — pick your category, design it your way, confirm your order. Baked fresh in Chandina, Cumilla.">
+  <meta name="theme-color" content="#241A12">
+  <meta property="og:title" content="Order — Delightful Baking &amp; Cooking">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23241A12'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='30' fill='%23E3B078' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/order.css">
+</head>
+<body id="top">
+
+  <!-- ============================================================
+       ORDER WIZARD — 3 steps: category → design → confirm
+       ============================================================ -->
+  <div class="ord-page">
+
+    <!-- header -->
+    <header class="ord-head">
+      <a class="ord-brand" href="index.html" aria-label="Delightful Baking &amp; Cooking — back to home">
+        <img class="ord-brand-mark" src="assets/img/logo.png" alt="" width="500" height="500">
+        <span class="ord-brand-name">
+          Delightful
+          <small>Baking &amp; cooking</small>
+        </span>
+      </a>
+      <div class="ord-close-wrap">
+        <a class="ord-close" href="index.html" aria-label="Close order and go home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- step indicator -->
+    <nav class="ord-steps" aria-label="Order progress">
+      <button class="ord-step ord-step--done" data-goto="1" aria-label="Step 1: choose category">
+        <span class="ord-step-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="ord-step-lbl">Category</span>
+      </button>
+      <span class="ord-step-line" aria-hidden="true"></span>
+      <button class="ord-step" data-goto="2" aria-label="Step 2: custom design">
+        <span class="ord-step-dot" aria-hidden="true"><span>2</span></span>
+        <span class="ord-step-lbl">Design</span>
+      </button>
+      <span class="ord-step-line" aria-hidden="true"></span>
+      <button class="ord-step" data-goto="3" aria-label="Step 3: confirm order">
+        <span class="ord-step-dot" aria-hidden="true"><span>3</span></span>
+        <span class="ord-step-lbl">Confirm</span>
+      </button>
+    </nav>
+
+    <!-- ============ STEP 1 · CATEGORY ============ -->
+    <section class="ord-pane is-active" data-pane="1">
+      <div class="ord-hello">
+        <h1>What are we <em>baking</em> for you?</h1>
+        <p>Pick a category — then tap the cake you want.</p>
+      </div>
+
+      <div class="cat-grid" id="catGrid" aria-label="Choose a category"></div>
+    </section>
+
+    <!-- ============ STEP 2 · DESIGN ============ -->
+    <section class="ord-pane" data-pane="2">
+      <div class="ord-hello">
+        <button class="ord-back" data-back="1" aria-label="Back to categories">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        </button>
+        <h1>Make it <em>yours</em></h1>
+        <p>Little touches, big difference.</p>
+      </div>
+
+      <!-- chosen item summary chip -->
+      <div class="pick-chip" id="pickChip"></div>
+
+      <div class="ord-group">
+        <h2 class="ord-label">Design reference <span class="ord-opt">pick one</span></h2>
+        <div class="design-cards" role="group" aria-label="Choose how to share your design">
+          <button class="design-card" id="designUploadBtn">
+            <span class="dc-ico" aria-hidden="true">📤</span>
+            <b>Upload design</b>
+            <small>your own photo</small>
+          </button>
+          <button class="design-card" id="designLibBtn">
+            <span class="dc-ico" aria-hidden="true">🖼️</span>
+            <b>From our gallery</b>
+            <small>pick a cake photo</small>
+          </button>
+        </div>
+        <input type="file" id="designFile" accept="image/*" hidden>
+        <div class="design-upload" id="designUploadBox" hidden>
+          <img class="du-thumb" id="designThumb" alt="Your uploaded design photo">
+          <span class="du-meta">
+            <b id="designFileName">design.jpg</b>
+            <button class="du-clear" id="designClear" type="button">✕ remove</button>
+          </span>
+        </div>
+        <div class="lib-grid" id="libGrid" hidden aria-label="Cake photo library"></div>
+      </div>
+
+      <div class="ord-group">
+        <h2 class="ord-label">Finish / frosting</h2>
+        <div class="chip-row" id="finishRow" role="group" aria-label="Choose frosting"></div>
+      </div>
+
+      <div class="ord-group">
+        <h2 class="ord-label">How many?</h2>
+        <div class="qty-box" id="qtyBox">
+          <button class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
+          </button>
+          <b class="qty-val" id="qtyVal">1</b>
+          <button class="qty-btn" id="qtyPlus" aria-label="Increase quantity">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ord-group">
+        <h2 class="ord-label">Message on cake <span class="ord-opt">optional</span></h2>
+        <div class="msg-box">
+          <svg class="msg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <input type="text" id="msgInput" maxlength="40" placeholder="e.g. Happy Birthday, Sara ♥" aria-label="Message on cake">
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 3 · CONFIRM ============ -->
+    <section class="ord-pane" data-pane="3">
+      <div class="ord-hello">
+        <button class="ord-back" data-back="2" aria-label="Back to design">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        </button>
+        <h1>Almost <em>there</em></h1>
+        <p>Your details, then we take it from here.</p>
+      </div>
+
+      <div class="ord-summary" id="orderSummary"></div>
+
+      <div class="ord-form">
+        <div class="f-row">
+          <label for="fName">Your name</label>
+          <input type="text" id="fName" autocomplete="name" placeholder="e.g. Sara Rahman">
+        </div>
+        <div class="f-row">
+          <label for="fPhone">Phone / Messenger</label>
+          <input type="tel" id="fPhone" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX">
+        </div>
+        <div class="f-row">
+          <label for="fDate">When do you need it?</label>
+          <input type="date" id="fDate">
+        </div>
+        <div class="f-row">
+          <span class="f-lbl" id="fPickLbl">Delivery or pickup?</span>
+          <div class="seg" role="radiogroup" aria-label="Delivery or pickup">
+            <button class="seg-btn is-on" data-mode="pickup" role="radio" aria-checked="true">🏠 Pickup</button>
+            <button class="seg-btn" data-mode="delivery" role="radio" aria-checked="false">🛵 Delivery</button>
+          </div>
+        </div>
+        <div class="f-row" id="fAddrRow" hidden>
+          <label for="fAddr">Delivery area</label>
+          <input type="text" id="fAddr" autocomplete="street-address" placeholder="Chandina / Cumilla area…">
+        </div>
+      </div>
+
+      <p class="ord-note">Customisation charge will be added ✨</p>
+      <p class="ord-note">Thank you for staying with us ❤️</p>
+    </section>
+
+    <!-- action bar -->
+    <div class="ord-bar">
+      <div class="ord-bar-in">
+        <div class="ord-total">
+          <span id="barTotal">৳0</span>
+          <small id="barQty">—</small>
+        </div>
+        <button class="btn-ord" id="btnNext">
+          <span id="btnNextLbl">Next</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span class="toast-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <span id="toastMsg">Nice choice!</span>
+    </div>
+
+  </div>
+
+  <script src="assets/data/premium.js"></script>
+  <script src="assets/data/site-data.js"></script>
+  <script src="assets/js/site-store.js"></script>
+  <script src="assets/js/order.js"></script>
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Delightful Baking &amp; Cooking — Handcrafted Cakes &amp; Desserts in Chandina, Cumilla</title>
+  <meta name="description" content="Delightful Baking &amp; Cooking — handcrafted cakes, brownies, cupcakes and celebration treats baked to order in Chandina, Cumilla. Order on Messenger, baked fresh.">
+  <meta name="theme-color" content="#241A12">
+  <meta property="og:title" content="Delightful Baking &amp; Cooking">
+  <meta property="og:description" content="Handcrafted cakes &amp; desserts, baked fresh in Chandina, Cumilla. Order on Messenger.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css?v=15">
+</head>
+<body id="top">
+
+  <!-- skip link -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- decorative grain -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- cursor blob -->
+  <div class="cursor-blob" id="cursorBlob" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       ANNOUNCEMENT BAR
+       ============================================================ -->
+  <div class="announce" id="announce" role="region" aria-label="Announcement">
+    <div class="announce-track">
+      <p class="announce-msg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Baking <em style="font-style:italic">&amp;</em> cooking from Chandina, Cumilla
+        <span class="sep" aria-hidden="true">•</span>
+        Custom celebration cakes, baked to order
+        <span class="sep" aria-hidden="true">•</span>
+        <a href="#menu" data-scroll>See this week&rsquo;s menu</a>
+      </p>
+    </div>
+    <button class="announce-close" id="announceClose" aria-label="Dismiss announcement">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <header class="nav" id="nav">
+    <div class="nav-shell">
+      <a class="brand" href="#home" aria-label="Delightful Baking &amp; Cooking — home">
+        <img class="brand-mark" src="assets/img/logo.png" alt="" width="500" height="500">
+        <span class="brand-name">
+          Delightful
+          <small>Baking &amp; cooking</small>
+        </span>
+      </a>
+
+      <nav aria-label="Primary">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home" data-nav>Home</a></li>
+          <li><a href="#story" data-nav>About us</a></li>
+          <li><a href="#process" data-nav>Personalized</a></li>
+          <li class="nav-more"><a href="#menu" data-nav>Menu</a></li>
+          <li class="nav-more"><a href="#reviews" data-nav>Reviews</a></li>
+          <li class="nav-more"><a href="#faq" data-nav>FAQ</a></li>
+          <li class="nav-more"><a href="#contact" data-nav>Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="nav-cta" href="order.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Order Now
+        </a>
+        <a class="nav-chat" href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener" aria-label="Order on Messenger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+        </a>
+        <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+          <svg class="open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+          <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="hero" id="home">
+      <!-- organic pastel waves behind the hero (full-width) -->
+      <div class="hero-waves" aria-hidden="true">
+        <span class="wave wv-a"></span>
+        <span class="wave wv-b"></span>
+        <span class="wave wv-c"></span>
+      </div>
+
+      <div class="container hero-inner">
+
+        <div class="hero-content">
+          <h1 class="hero-headline">
+            <span class="hv-word hv-w1">Delightful</span>
+
+            <span class="hv-cake" data-tilt>
+              <img class="hv-cup" src="assets/img/hero-cupcake.png" alt="Pink frosted cupcake with rainbow sprinkles" loading="eager" fetchpriority="high">
+
+              <img class="hf hf-stb hf-stb-a" src="assets/img/stb-1.png" alt="" loading="eager">
+              <img class="hf hf-stb hf-stb-b" src="assets/img/stb-2.png" alt="" loading="eager">
+              <img class="hf hf-stb hf-stb-c" src="assets/img/stb-1.png" alt="" loading="lazy">
+
+              <svg class="hf hf-spk1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.1 8.4L24 12l-9.9 3.6L12 24l-2.1-8.4L0 12l9.9-3.6L12 0z"/></svg>
+              <svg class="hf hf-spk2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.1 8.4L24 12l-9.9 3.6L12 24l-2.1-8.4L0 12l9.9-3.6L12 0z"/></svg>
+              <svg class="hf hf-spk3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.1 8.4L24 12l-9.9 3.6L12 24l-2.1-8.4L0 12l9.9-3.6L12 0z"/></svg>
+
+              <i class="hf-sp" style="left:-9%; bottom:12%; transform:rotate(-38deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #E8A0B4;"></i>
+              <i class="hf-sp" style="left:-4%; bottom:34%; transform:rotate(20deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #F2C25C;"></i>
+              <i class="hf-sp" style="right:-6%; bottom:20%; transform:rotate(-15deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #8FC49B;"></i>
+              <i class="hf-sp" style="right:8%; bottom:-8%; transform:rotate(42deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #AD8AC1;"></i>
+              <i class="hf-sp" style="left:16%; bottom:-10%; transform:rotate(-24deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #D8879F;"></i>
+              <i class="hf-sp" style="right:-10%; bottom:-14%; transform:rotate(8deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #7FB3D5;"></i>
+              <i class="hf-sp" style="left:28%; top:-4%; transform:rotate(30deg); background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0) 50%), #E8A0B4;"></i>
+            </span>
+
+            <span class="hv-word hv-w2">Baking <span class="hv-amp">&amp; Cooking</span></span>
+          </h1>
+
+          <p class="hero-tagline"><span class="hl-so">Explore our</span> <span class="tl-hl">Cake Heaven</span></p>
+          <p class="hero-claim">Your next favorite cake is here. Delightful Baking &amp; Cooking!</p>
+
+          <div class="hero-cta">
+            <a href="order.html" class="btn btn-oval btn-h-order">
+              <span>Order Now</span>
+              <span class="bh-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+            <a href="#process" class="btn btn-oval btn-h-ghost">Personalized</a>
+          </div>
+
+          <div class="hero-proof">
+            <div class="hero-stats">
+              <div class="hstat">
+                <b>1K<span>+</span></b><small>Followers</small>
+              </div>
+              <div class="hstat">
+                <b>80<span>+</span></b><small>Orders baked</small>
+              </div>
+              <div class="hstat">
+                <b>100<span>%</span></b><small>Fresh to order</small>
+              </div>
+            </div>
+
+            <div class="hero-rating">
+              <div class="hero-av" aria-hidden="true">
+                <span>R</span><span>S</span><span>T</span><span>+</span>
+              </div>
+              <div>
+                <span class="hero-stars" aria-label="5 star rating">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>
+                </span>
+                <p><b>5.0</b> from home &amp; online orders</p>
+              </div>
+            </div>
+          </div>
+          <p class="hero-tagline"><span class="hl-so">Explore our</span> <span class="tl-hl">Cake Heaven</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MARQUEE
+         ============================================================ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span class="marquee-item">Freshly baked daily</span>
+        <span class="marquee-item">Custom celebration cakes</span>
+        <span class="marquee-item">Brownies &amp; cupcakes</span>
+        <span class="marquee-item">Order on Messenger</span>
+        <span class="marquee-item">Chandina · Cumilla</span>
+        <span class="marquee-item">Freshly baked daily</span>
+        <span class="marquee-item">Custom celebration cakes</span>
+        <span class="marquee-item">Brownies &amp; cupcakes</span>
+        <span class="marquee-item">Order on Messenger</span>
+        <span class="marquee-item">Chandina · Cumilla</span>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PREMIUM COLLECTION — featured tier
+         ============================================================ -->
+    <section class="premium section" id="premium" aria-labelledby="premium-heading">
+      <div class="premium-in">
+        <div class="premium-head reveal">
+          <span class="premium-kicker" data-h-eyebrow="premiumKicker">Signature tier</span>
+          <h2 class="premium-title" id="premium-heading" data-h-title="premiumTitle">Premium <em>cakes</em></h2>
+        </div>
+        <div class="premium-grid" id="premiumGrid" aria-label="Premium cake collection"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MENU / PRODUCTS
+         ============================================================ -->
+    <section class="menu section" id="menu" aria-labelledby="menu-heading">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow" data-h-eyebrow="menuEyebrow">This week&rsquo;s bake</span>
+          <h2 class="section-title" id="menu-heading" data-h-title="menuTitle">Pick your favourite, <em>we&rsquo;ll bake it fresh</em> for you</h2>
+        </div>
+
+        <div class="menu-toolbar reveal">
+          <div class="filters" id="filters" role="group" aria-label="Filter products"></div>
+          <div class="search-box" id="searchBox">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="search" id="searchInput" placeholder="Search the menu…" aria-label="Search the menu" autocomplete="off">
+            <button class="search-clear" id="searchClear" aria-label="Clear search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid" id="productGrid" aria-live="polite"></div>
+
+        <p class="grid-count reveal" id="gridCount" aria-live="polite"></p>
+
+        <div class="reveal" style="margin-top:40px; text-align:center;">
+          <p style="color: var(--cocoa-soft); font-size:14px; margin-bottom:10px;">Looking for something specific — a theme, a size, a flavour?</p>
+          <a href="order.html" class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+            Make a custom order
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         HOW IT WORKS
+         ============================================================ -->
+    <section class="how section" id="process" aria-labelledby="process-heading">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow" data-h-eyebrow="processEyebrow">The process</span>
+          <h2 class="section-title" id="process-heading" data-h-title="processTitle">How to <em>get your cake</em></h2>
+          <p class="how-note" aria-hidden="true">no forms, no booking fees &mdash; just a chat on Messenger</p>
+        </div>
+
+        <ol class="steps">
+          <svg class="steps-connector" viewBox="0 0 1200 60" fill="none" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M80 40 C 260 10, 420 60, 600 34 S 950 14, 1120 40" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="1 9" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+          </svg>
+
+          <li class="step reveal d1">
+            <span class="step-num" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M32 5 C 15 5 4 16 4 32 S 15 59 32 59 S 60 48 60 32 S 49 5 32 5" stroke-dasharray="3 5" stroke-linecap="round"/></svg>
+              <b>1</b>
+            </span>
+            <h3>Tell us about the cake</h3>
+            <p>Flavour, size, colour &mdash; or just describe what&rsquo;s in your head and we&rsquo;ll take it from there. Message us on Messenger and a real person from the kitchen replies, usually within a few hours.</p>
+            <span class="step-ask">we&rsquo;ll ask about: <b>date &middot; flavour &middot; guests</b></span>
+          </li>
+
+          <li class="step reveal d2">
+            <span class="step-num" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M32 5 C 15 5 4 16 4 32 S 15 59 32 59 S 60 48 60 32 S 49 5 32 5" stroke-dasharray="3 5" stroke-linecap="round"/></svg>
+              <b>2</b>
+            </span>
+            <h3>We bake it fresh</h3>
+            <p>Once we&rsquo;ve agreed on a date, we start from scratch &mdash; fresh butter, fresh eggs, real patience. Bigger or custom cakes need a little lead time, so the sooner you message, the safer we feel.</p>
+            <span class="step-margin">baking starts the night before, always</span>
+          </li>
+
+          <li class="step reveal d3">
+            <span class="step-num" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M32 5 C 15 5 4 16 4 32 S 15 59 32 59 S 60 48 60 32 S 49 5 32 5" stroke-dasharray="3 5" stroke-linecap="round"/></svg>
+              <b>3</b>
+            </span>
+            <h3>Pick up or delivery</h3>
+            <p>Your cake will be ready in Chandina, Cumilla &mdash; boxed and waiting. Can&rsquo;t come by? Ask about local delivery when you order; if it&rsquo;s possible that day, we&rsquo;ll make it happen.</p>
+          </li>
+        </ol>
+
+        <div class="how-cta reveal d3">
+          <a class="btn btn-primary" href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener">
+            Message us on Messenger
+          </a>
+          <span class="how-sign" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 21s-7.8-4.9-9.8-9.5C.7 8.2 2.9 4.7 6.3 4.7c2.2 0 3.8 1.3 4.7 3 .9-1.7 2.5-3 4.7-3 3.4 0 5.6 3.5 4.1 6.8C19.8 16.1 12 21 12 21z"/></svg>
+            from the Chandina kitchen
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CATEGORY BAND
+         ============================================================ -->
+    <section class="cats section" aria-labelledby="cats-heading">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow" data-h-eyebrow="catsEyebrow">From savoury to sweet</span>
+          <h2 class="section-title" id="cats-heading" data-h-title="catsTitle">What we bake &amp; cook</h2>
+        </div>
+        <div class="cats-row" id="catsRow"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         STORY / ABOUT
+         ============================================================ -->
+    <section class="section" id="story" aria-labelledby="story-heading">
+      <div class="container story">
+        <div class="story-media reveal">
+          <div class="frame">
+            <img id="storyMediaImg" src="assets/img/hero-float2.jpg" alt="Inside our Delightful kitchen — a freshly baked cake" loading="lazy" style="aspect-ratio: 1/1; object-fit: cover;">
+          </div>
+          <div class="story-float">
+            <b id="storyFloatB">1K+</b>
+            <small id="storyFloatSmall">friends who follow<br>our little kitchen</small>
+          </div>
+          <div class="story-patch" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M50 5 62 20 79 18 78 35 94 45 81 56 84 74 66 72 54 84 44 70 27 72 29 55 12 45 27 36 26 18 44 22z"/></svg>
+          </div>
+        </div>
+
+        <div class="story-body reveal d1">
+          <span class="eyebrow" data-h-eyebrow="storyEyebrow">Behind the brand</span>
+          <p class="lead" id="storyLead">“Welcome to our baking and cooking page — we started small at home, and this page grew to 1K followers the honest way: one delighted slice at a time.”</p>
+          <div id="storyParas">
+            <p>
+              Delightful Baking &amp; Cooking began as a home kitchen in Chandina, Cumilla — baking for family, then for neighbours,
+              then for birthdays we&rsquo;d never met. Today it&rsquo;s still a small, careful operation: real ingredients, baked in small batches,
+              and finished only when it actually tastes right.
+            </p>
+            <p>
+              Whether you&rsquo;re after a simple pound loaf or a fully themed celebration cake, we&rsquo;d be genuinely honoured
+              to bake for your table. Talk to us over Messenger — we usually reply fast.
+            </p>
+          </div>
+
+          <div class="story-mini" id="storyFacts" aria-label="Quick facts">
+            <div class="cell"><b>100%</b><small>from-scratch</small></div>
+            <div class="cell"><b>No premix</b><small>fresh each batch</small></div>
+            <div class="cell"><b>Cumilla</b><small>baked local</small></div>
+          </div>
+
+          <div class="story-sig">
+            <span class="sig" aria-hidden="true">Delightful</span>
+            <div>
+              <span class="sig-name" id="storySigName">The Delightful Kitchen</span>
+              <span class="sig-role" id="storySigRole">Chandina, Cumilla — baking since the very first batch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         REVIEWS
+         ============================================================ -->
+    <section class="reviews section" id="reviews" aria-labelledby="reviews-heading">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow" data-h-eyebrow="reviewsEyebrow">Sweet reviews</span>
+          <h2 class="section-title" id="reviews-heading" data-h-title="reviewsTitle">What our happy <em>customers say</em></h2>
+        </div>
+
+        <div class="reviews-toolbar reveal">
+          <div class="avg-score">
+            <b id="avgScore">5.0</b>
+            <div>
+              <span class="stars" id="avgStars" aria-label="5 stars"></span>
+              <p>Based on orders and page reviews</p>
+            </div>
+          </div>
+          <a href="https://www.facebook.com" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+            Share your experience
+          </a>
+        </div>
+
+        <div class="reviews-grid" id="reviewsGrid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FAQ
+         ============================================================ -->
+    <section class="faq section" id="faq" aria-labelledby="faq-heading">
+      <div class="container faq-grid">
+        <div class="faq-side reveal">
+          <span class="eyebrow" data-h-eyebrow="faqEyebrow">Good to know</span>
+          <h2 class="section-title" id="faq-heading" data-h-title="faqTitle">Questions we <em>get a lot</em></h2>
+          <p class="section-sub">If your question isn&rsquo;t here, just message us. If it&rsquo;s a yes-or-no, we&rsquo;ll keep the answer quick.</p>
+
+          <div class="card-cta">
+            <h3>Still unsure about something?</h3>
+            <p>Ask us on Messenger — a real person from the kitchen replies, not a bot.</p>
+            <a href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+              Start a chat
+            </a>
+          </div>
+        </div>
+
+        <div class="accordion reveal d1" id="accordion"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CTA BAND
+         ============================================================ -->
+    <section class="cta-band section" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="cta-card reveal">
+          <h2 id="cta-heading">Got a date to <em>celebrate?</em> Let&rsquo;s bake for it.</h2>
+          <p>Message us on Messenger with your day, your guest count and your favourite flavour — we&rsquo;ll handle everything from the first scratch to the last slice.</p>
+          <div class="cta-row">
+            <a href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener" class="btn btn-light btn-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+              Start a Cake Chat
+            </a>
+            <a href="#menu" class="btn btn-outline-light btn-lg" data-scroll>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M4 6v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6M3 6l2-3h14l2 3"/></svg>
+              See the menu first
+            </a>
+          </div>
+          <p class="cta-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Chandina, Cumilla · cash on pick-up · delivery nearby
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="#home">
+            <img class="brand-mark" src="assets/img/logo.png" alt="" width="500" height="500">
+            <span class="brand-name">Delightful<small>Baking &amp; cooking</small></span>
+          </a>
+          <p>Home bakery &amp; small kitchen from Chandina, Cumilla. Cakes, brownies, cupcakes and custom celebration bakes — made from butter, eggs and patience.</p>
+          <div class="footer-social">
+            <a href="https://www.facebook.com" target="_blank" rel="noopener" aria-label="Facebook page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 .9-1H18z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener" aria-label="Message us on Messenger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 id="footer-menu-heading">Menu</h4>
+          <ul aria-labelledby="footer-menu-heading">
+            <li><a href="#menu" data-scroll>This week&rsquo;s bake</a></li>
+            <li><a href="#process" data-scroll>How ordering works</a></li>
+            <li><a href="#story" data-scroll>Our kitchen</a></li>
+            <li><a href="#reviews" data-scroll>Reviews</a></li>
+            <li><a href="#faq" data-scroll>FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 id="footer-order-heading">Ordering</h4>
+          <ul aria-labelledby="footer-order-heading">
+            <li><a href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener">Order via Messenger</a></li>
+            <li><a href="https://www.facebook.com" target="_blank" rel="noopener">Facebook page</a></li>
+            <li><a href="#menu" data-scroll>Custom cake enquiry</a></li>
+            <li><a href="#faq" data-scroll>Delivery details</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 id="footer-contact-heading">Say hello</h4>
+          <ul class="footer-contact" aria-labelledby="footer-contact-heading">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.6-9.3-9.6A5.6 5.6 0 0 1 12 6.8 5.6 5.6 0 0 1 21.3 11 8 8 0 0 1 12 21z"/><circle cx="12" cy="11" r="2.2"/></svg>
+              Chandina, Cumilla — Bangladesh
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+              <a href="https://www.facebook.com/messages/t/delightfulbakingandcooking" target="_blank" rel="noopener">Message us on Facebook</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              Usually replies within the hour
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© <span id="year">2026</span> Delightful Baking &amp; Cooking. All orders lovingly baked.</p>
+        <p class="footer-made">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-8-5.5-9.5-10C1.5 8 3 5 6 5c2.2 0 3.4 1.3 4 2.5C10.6 6.3 11.8 5 14 5c2.9 0 4.5 2.5 3.5 6C16 15.5 12 21 12 21z"/></svg>
+          Made with butter in Chandina
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- floating order button -->
+  <a class="fab" href="order.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+    <b>Order</b>
+  </a>
+
+  <!-- scroll to top -->
+  <button class="scroll-top" id="scrollTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <!-- toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+    <span id="toastMsg">Message sent — Assalamualaikum!</span>
+  </div>
+
+  <!-- quick view modal -->
+  <div class="modal" id="quickModal" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
+    <div class="modal-bg" data-close></div>
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" data-close aria-label="Close quick view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="modal-media" id="qvMedia"><img id="qvImg" src="" alt=""></div>
+      <div class="modal-body">
+        <span class="tag-inline" id="qvTag"></span>
+        <h3 id="qvTitle"></h3>
+        <div class="modal-price" id="qvPrice"></div>
+        <p class="modal-desc" id="qvDesc"></p>
+        <div class="modal-meta">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Baked fresh to order</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-9.5-10C5 6 9 5.5 12 8c3-2.5 7-2 9.5 3C18 15.5 12 21 12 21z"/></svg> Chandina · Cumilla</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Confirmed with you before baking</span>
+        </div>
+        <a class="btn btn-primary" id="qvOrder" href="order.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.38 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>
+          Order this on the menu
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/data/premium.js?v=8"></script>
+  <script src="assets/data/site-data.js?v=8"></script>
+  <script src="assets/js/site-store.js?v=8"></script>
+  <script src="assets/js/main.js?v=9"></script>
+</body>
+</html>
