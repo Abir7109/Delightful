@@ -516,6 +516,48 @@ body::before {
 .btn-ord:disabled { opacity: .55; box-shadow: none; cursor: not-allowed; transform: none; }
 .btn-ord--done { background: var(--green); color: #fff; }
 
+/* ---------- confirmation screen ---------- */
+.ord-confirm { text-align: center; padding: 40px 20px 60px; max-width: 520px; margin: 0 auto; }
+.ord-confirm-icon {
+  width: 80px; height: 80px; margin: 0 auto 20px;
+  background: var(--green); color: #fff; border-radius: 50%;
+  display: grid; place-items: center;
+  animation: popIn .5s var(--spring);
+}
+.ord-confirm-icon svg { width: 40px; height: 40px; }
+.ord-confirm-title { font-family: var(--font-display); font-size: 32px; margin: 0 0 8px; }
+.ord-confirm-title em { font-style: italic; color: var(--caramel); }
+.ord-confirm-sub { color: var(--cocoa-soft); margin: 0 0 28px; font-size: 15px; }
+.ord-confirm-card {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--card, #fffdf8); border: 1px solid var(--line);
+  border-radius: 16px; padding: 16px; margin-bottom: 20px; text-align: left;
+}
+.ord-confirm-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; flex: none; }
+.ord-confirm-ico { width: 80px; height: 80px; border-radius: 12px; background: var(--rose); display: grid; place-items: center; font-size: 36px; flex: none; }
+.ord-confirm-meta b { display: block; font-size: 15px; margin-bottom: 2px; }
+.ord-confirm-meta small { display: block; color: var(--cocoa-soft); font-size: 13px; }
+.ord-confirm-price { color: var(--caramel-deep) !important; font-weight: 800; font-size: 15px !important; margin-top: 6px; }
+.ord-confirm-details {
+  background: var(--card, #fffdf8); border: 1px solid var(--line);
+  border-radius: 14px; padding: 16px; margin-bottom: 24px; text-align: left;
+}
+.ord-confirm-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.ord-confirm-row:last-child { border-bottom: none; }
+.ord-confirm-row span { color: var(--cocoa-soft); font-size: 13px; }
+.ord-confirm-row b { font-size: 14px; }
+.ord-confirm-row small { color: var(--cocoa-soft); font-size: 11px; word-break: break-all; }
+.ord-confirm-actions { margin-top: 8px; }
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* ---------- responsive ---------- */
 @media (min-width: 620px) {
   .cat-grid { grid-template-columns: repeat(3, 1fr); }

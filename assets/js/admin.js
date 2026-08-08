@@ -306,16 +306,36 @@
       var statusColor = STATUS_COLORS[o.status] || "#888";
       var item = o.item || {};
       var cust = o.customer || {};
+      var imgHTML = "";
+      if (item.img) {
+        imgHTML = '<img class="adm-order-img" src="' + esc(item.img) + '" alt="' + esc(item.name || "") + '" loading="lazy">';
+      } else if (item.ico) {
+        imgHTML = '<div class="adm-order-ico">' + item.ico + "</div>";
+      }
       return '<div class="adm-item adm-order" data-oid="' + o.id + '">' +
         '<div class="adm-item-main">' +
-          '<div class="adm-order-head">' +
-            '<b>' + esc(cust.name || "Customer") + "</b>" +
-            '<span class="adm-order-status" style="background:' + statusColor + '">' + esc(o.status) + "</span>" +
-          '</div>' +
-          '<small>' + esc(item.name || "") + " · " + esc(item.category || "") + (item.qty > 1 ? " × " + item.qty : "") + "</small>" +
-          '<small>' + esc(cust.phone || "") + (cust.date ? " · needed " + esc(cust.date) : "") + (cust.mode ? " · " + esc(cust.mode) : "") + "</small>" +
-          (item.msg ? '<small class="adm-order-msg">"' + esc(item.msg) + '"</small>' : "") +
-          '<small class="adm-muted">' + timeStr + "</small>" +
+          '<div class="adm-order-top">' +
+            imgHTML +
+            '<div class="adm-order-info">' +
+              '<div class="adm-order-head">' +
+                '<b>' + esc(cust.name || "Customer") + "</b>" +
+                '<span class="adm-order-status" style="background:' + statusColor + '">' + esc(o.status) + "</span>" +
+              "</div>" +
+              '<small class="adm-order-item-name">' + esc(item.name || "") + (item.qty > 1 ? " × " + item.qty : "") + "</small>" +
+              (item.category ? '<small>' + esc(item.category) + (item.finish ? " · " + esc(item.finish) : "") + "</small>" : "") +
+              (item.design && item.design !== "—" ? '<small class="adm-muted">Design: ' + esc(item.design) + "</small>" : "") +
+            "</div>" +
+          "</div>" +
+          '<div class="adm-order-contact">' +
+            '<span>📱 ' + esc(cust.phone || "N/A") + "</span>" +
+            (cust.date ? '<span>📅 ' + esc(cust.date) + "</span>" : "") +
+            '<span>' + (cust.mode === "delivery" ? "🛵 Delivery" : "🏠 Pickup") + (cust.address ? " — " + esc(cust.address) : "") + "</span>" +
+          "</div>" +
+          (item.msg ? '<div class="adm-order-msg">"' + esc(item.msg) + '"</div>' : "") +
+          '<div class="adm-order-footer">' +
+            '<small class="adm-muted">' + timeStr + "</small>" +
+            (item.total != null ? '<b class="adm-order-price">৳' + item.total.toLocaleString("en-IN") + "</b>" : '<small class="adm-muted">Price on request</small>') +
+          "</div>" +
         "</div>" +
         '<div class="adm-item-actions adm-order-actions">' +
           ORDER_STATUSES.map(function (s) {

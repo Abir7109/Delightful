@@ -384,7 +384,7 @@
   });
 
   /* ------------------------------------------------------------
-     5. SEND ORDER → Messenger
+     5. SEND ORDER → save + confirm
      ------------------------------------------------------------ */
   function sendOrder() {
     const [cid, idx] = (state.item || ":").split(":");
@@ -393,7 +393,7 @@
     if (!it) return;
     const finish = FINISHES.find(f => f.id === state.finish);
     const designLbl = state.design
-      ? (state.design.mode === "upload" ? `Uploaded design photo (${state.design.name}) — customer will share it in chat` : `Design from gallery: ${state.design.name}`)
+      ? (state.design.mode === "upload" ? `Uploaded: ${state.design.name}` : `Gallery: ${state.design.name}`)
       : "—";
     const name = el.fName.value.trim();
     const phone = el.fPhone.value.trim();
@@ -404,46 +404,91 @@
     if (!name) return toast("Tell us your name 💬");
     if (!phone) return toast("Phone number please 📱");
 
-    const lines = [
-      "Assalamualaikum! 🍰",
-      "",
-      "New order from the website:",
-      "",
-      `• Item: ${it.name}`,
-      `• Category: ${cat.name}`,
-      `• Finish: ${finish ? finish.label : "—"}`,
-      `• Design: ${designLbl}`,
-      it.img ? "• Photo: selected from the Premium gallery — customer will share it in chat" : "",
-      `• Quantity: ${state.qty}`,
-      state.msg ? `• Message: ${state.msg}` : "",
-      `• Estimated: ${priceLbl(it.price == null ? null : it.price * state.qty)} (customisation charge may be added ✨)`,
-      "",
-      `• Name: ${name}`,
-      `• Phone: ${phone}`,
-      date ? `• Needed by: ${date}` : "",
-      mode === "delivery" ? `• Delivery to: ${addr}` : "• Pickup",
-      "",
-      "Please confirm availability. Thank you! ❤️"
-    ].filter(Boolean).join("\n");
+    /* build order object */
+    var order = {
+      id: "o-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+      timestamp: new Date().toISOString(),
+      status: "new",
+      customer: { name: name, phone: phone, date: date, mode: mode, address: addr },
+      item: {
+        name: it.name,
+        category: cat.name,
+        finish: finish ? finish.label : "",
+        design: designLbl,
+        qty: state.qty,
+        msg: state.msg,
+        price: it.price,
+        total: it.price == null ? null : it.price * state.qty,
+        img: it.img || "",
+        ico: it.ico || ""
+      }
+    };
 
-    const url = FB_PAGE + "?text=" + encodeURIComponent(lines);
-    toast("Opening Messenger… 📨");
-
-    /* save order to localStorage for admin tracking */
+    /* save to localStorage */
     try {
       var orders = JSON.parse(localStorage.getItem("db_orders_v1") || "[]");
-      orders.unshift({
-        id: "o-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-        timestamp: new Date().toISOString(),
-        status: "new",
-        customer: { name: name, phone: phone, date: date, mode: mode, address: addr },
-        item: { name: it.name, category: cat.name, finish: finish ? finish.label : "", design: designLbl, qty: state.qty, msg: state.msg, price: it.price, total: it.price == null ? null : it.price * state.qty }
-      });
+      orders.unshift(order);
       localStorage.setItem("db_orders_v1", JSON.stringify(orders));
     } catch (e) { /* ignore */ }
 
-    window.open(url, "_blank");
-    setTimeout(() => window.location.href = "index.html", 1500);
+    /* show confirmation */
+    showConfirmation(order);
+  }
+
+  function showConfirmation(order) {
+    var it = order.item;
+    var cust = order.customer;
+    var date = new Date(order.timestamp);
+    var timeStr = date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+    var confirmPane = document.createElement("section");
+    confirmPane.className = "ord-pane is-active";
+    confirmPane.id = "confirmPane";
+    confirmPane.innerHTML = `
+      <div class="ord-confirm">
+        <div class="ord-confirm-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+        </div>
+        <h1 class="ord-confirm-title">Order <em>received!</em></h1>
+        <p class="ord-confirm-sub">We'll review your order and get back to you soon.</p>
+
+        <div class="ord-confirm-card">
+          ${it.img ? `<img class="ord-confirm-img" src="${it.img}" alt="${it.name}" loading="lazy">` : `<div class="ord-confirm-ico">${it.ico || "🍰"}</div>`}
+          <div class="ord-confirm-meta">
+            <b>${it.name}</b>
+            <small>${it.category}${it.qty > 1 ? " × " + it.qty : ""}</small>
+            ${it.finish ? `<small>Finish: ${it.finish}</small>` : ""}
+            ${it.msg ? `<small>Message: "${it.msg}"</small>` : ""}
+            <small class="ord-confirm-price">${it.total != null ? "৳" + it.total.toLocaleString("en-IN") : "Price on request"}</small>
+          </div>
+        </div>
+
+        <div class="ord-confirm-details">
+          <div class="ord-confirm-row"><span>Name</span><b>${cust.name}</b></div>
+          <div class="ord-confirm-row"><span>Phone</span><b>${cust.phone}</b></div>
+          ${cust.date ? `<div class="ord-confirm-row"><span>Needed by</span><b>${cust.date}</b></div>` : ""}
+          <div class="ord-confirm-row"><span>Mode</span><b>${cust.mode === "delivery" ? "Delivery" : "Pickup"}${cust.address ? " — " + cust.address : ""}</b></div>
+          <div class="ord-confirm-row"><span>Order ID</span><small>${order.id}</small></div>
+          <div class="ord-confirm-row"><span>Date</span><small>${timeStr}</small></div>
+        </div>
+
+        <div class="ord-confirm-actions">
+          <a class="btn-ord btn-ord--done" href="index.html" style="text-decoration:none;text-align:center">Back to home</a>
+        </div>
+      </div>
+    `;
+
+    /* hide all existing panes, step nav, bar */
+    el.panes.forEach(p => p.classList.remove("is-active"));
+    el.panes.forEach(p => p.style.display = "none");
+    el.stepsNav.style.display = "none";
+    var bar = document.querySelector(".ord-bar");
+    if (bar) bar.style.display = "none";
+
+    /* insert confirmation */
+    var page = document.querySelector(".ord-page");
+    var toastEl = document.getElementById("toast");
+    page.insertBefore(confirmPane, toastEl);
   }
 
   /* ------------------------------------------------------------
