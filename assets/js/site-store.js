@@ -124,7 +124,7 @@ window.DB = (function () {
     return "legacy:" + h.toString(16);
   }
 
-  /* ---- orders (localStorage + Atlas sync) ---- */
+  /* ---- orders (localStorage + Atlas sync via Netlify Function) ---- */
   function getOrders() {
     try { return JSON.parse(LS.getItem(ORDERS_KEY) || "[]"); }
     catch (e) { return []; }
@@ -132,18 +132,11 @@ window.DB = (function () {
 
   function saveOrders(orders) {
     try { LS.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch (e) {}
-    /* sync to Atlas if connected */
-    if (isConfigured()) {
-      apiRequest("replaceOne", {
-        collection: "orders",
-        filter: { _id: "all" },
-        replacement: { items: orders || [] },
-        upsert: true
-      }).catch(function () {});
-    }
+    /* sync to Atlas via Netlify Function */
+    mongoFn("push", "orders", { items: orders || [] }).catch(function () {});
   }
 
-  /* ---- MongoDB Atlas Data API ---- */
+  /* ---- MongoDB via Netlify Function (server-side driver) ---- */
   var COLLECTIONS = {
     site: { _id: "main", fields: ["story", "headings", "cats", "hero", "order", "settings"] },
     products: { _id: "all", items: true },
@@ -153,61 +146,42 @@ window.DB = (function () {
     orders: { _id: "all", items: true }
   };
 
-  function mongoCfg() {
-    var s = get("settings") || {};
-    return { url: s.dataApiUrl || "", key: s.apiKey || "", ds: s.dataSource || "", db: s.database || "delightful" };
-  }
-
-  function isConfigured() {
-    var c = mongoCfg();
-    return !!(c.url && c.key && c.ds && c.db);
-  }
-
-  function apiRequest(action, body) {
-    var c = mongoCfg();
-    var url = c.url.replace(/\/+$/, "") + "/action/" + action;
-    return fetch(url, {
+  function mongoFn(action, collection, data) {
+    return fetch("/.netlify/functions/mongo", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": c.key,
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        dataSource: c.ds,
-        database: c.db,
-        collection: body.collection,
-        filter: body.filter || {},
-        replacement: body.replacement,
-        upsert: body.upsert === true
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: action, collection: collection, data: data })
     }).then(function (res) {
       return res.json().then(function (j) {
-        if (!res.ok) throw new Error(j && j.error ? j.error : "HTTP " + res.status);
+        if (!res.ok || !j.ok) throw new Error(j.error || "HTTP " + res.status);
         return j;
       });
     });
   }
 
+  function isConfigured() {
+    /* the Netlify Function is always deployed — test with a lightweight pull */
+    return mongoFn("pull", "site").then(function () { return true; }).catch(function () { return false; });
+  }
+
   function mongoTest() {
-    if (!isConfigured()) return Promise.reject(new Error("Connection fields are incomplete."));
-    return apiRequest("findOne", { collection: "site", filter: { _id: COLLECTIONS.site._id } })
+    return mongoFn("pull", "site")
       .then(function () { mongoState.status = "connected"; mongoState.error = ""; return true; });
   }
 
   function mongoPull() {
-    if (!isConfigured()) return Promise.resolve(false);
     var jobs = Object.keys(COLLECTIONS).map(function (name) {
       var spec = COLLECTIONS[name];
-      return apiRequest("findOne", { collection: name, filter: { _id: spec._id } })
+      return mongoFn("pull", name)
         .then(function (res) {
-          var doc = res && res.document;
+          var doc = res.data;
           if (!doc) return { name: name, found: false };
           if (spec.items) return { name: name, found: true, items: doc.items || [] };
           var o = {};
-          spec.fields.forEach(function (f) { o[f] = doc[f]; });
+          spec.fields.forEach(function (f) { if (doc[f] !== undefined) o[f] = doc[f]; });
           return { name: name, found: true, fields: o };
-        });
+        })
+        .catch(function () { return { name: name, found: false }; });
     });
 
     return Promise.all(jobs).then(function (results) {
@@ -226,23 +200,17 @@ window.DB = (function () {
   }
 
   function mongoPush() {
-    if (!isConfigured()) return Promise.resolve(false);
     var d = merged();
     var jobs = Object.keys(COLLECTIONS).map(function (name) {
       var spec = COLLECTIONS[name];
-      var replacement;
+      var pushData;
       if (spec.items) {
-        replacement = { items: d[name] || [] };
+        pushData = { items: d[name] || [] };
       } else {
-        replacement = {};
-        spec.fields.forEach(function (f) { replacement[f] = d[f]; });
+        pushData = {};
+        spec.fields.forEach(function (f) { pushData[f] = d[f]; });
       }
-      return apiRequest("replaceOne", {
-        collection: name,
-        filter: { _id: spec._id },
-        replacement: replacement,
-        upsert: true
-      });
+      return mongoFn("push", name, pushData);
     });
     return Promise.all(jobs).then(function () {
       mongoState.status = "connected";

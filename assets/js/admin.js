@@ -786,10 +786,6 @@
     $("#heroBgPrev").src = h.bg || "";
     $("#heroBgPrev").classList.toggle("placeholder", !h.bg);
     var s = data.settings;
-    $("#mUrl").value = s.dataApiUrl || "";
-    $("#mKey").value = s.apiKey || "";
-    $("#mDs").value = s.dataSource || "";
-    $("#mDb").value = s.database || "";
     updateBadge();
   }
 
@@ -814,19 +810,10 @@
       toast("Restored the default hero background");
     });
 
-    function readMongoFields() {
-      data.settings.dataApiUrl = $("#mUrl").value.trim();
-      data.settings.apiKey = $("#mKey").value.trim();
-      data.settings.dataSource = $("#mDs").value.trim();
-      data.settings.database = $("#mDb").value.trim() || "delightful";
-    }
-
     function mongoAct(fn, okMsg) {
-      readMongoFields();
       saveData({ push: false });
       fn().then(function (r) {
         updateBadge();
-        if (r === false) return toast("Fill all connection fields first", true);
         toast(okMsg);
       }).catch(function (err) {
         updateBadge();
@@ -839,11 +826,6 @@
     });
     $("#mPullBtn").addEventListener("click", function () {
       mongoAct(function () { return DB.mongoPull(); }, "Pulled latest data from Atlas");
-    });
-    $("#mSaveBtn").addEventListener("click", function () {
-      mongoAct(function () {
-        return DB.mongoTest().then(function () { return DB.mongoPush(); });
-      }, "Connection saved + data pushed to Atlas");
     });
   }
 

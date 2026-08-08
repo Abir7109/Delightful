@@ -253,17 +253,10 @@
 
         <div class="adm-card">
           <h3>MongoDB Atlas sync</h3>
-          <p class="adm-muted">Optional. Creates the connection so edits made here also appear on other devices. You need the Atlas Data API URL and an API key (Atlas → Data API → enable, then copy the API key).</p>
-          <div class="adm-fields">
-            <label class="adm-f"><span>Data API URL</span><input type="url" id="mUrl" placeholder="https://data.mongodb-api.com/app/xxxx/endpoint/data/v1"></label>
-            <label class="adm-f"><span>API key</span><input type="password" id="mKey" autocomplete="off" placeholder="paste your Data API key"></label>
-            <label class="adm-f"><span>Data source (cluster name)</span><input type="text" id="mDs" placeholder="Cluster0"></label>
-            <label class="adm-f"><span>Database name</span><input type="text" id="mDb" placeholder="delightful"></label>
-          </div>
+          <p class="adm-muted">Connected via Netlify environment variable (MONGO_URI). No configuration needed here — sync happens automatically when you save.</p>
           <div class="adm-actions">
             <button class="adm-btn" id="mTestBtn" type="button">Test connection</button>
             <button class="adm-btn" id="mPullBtn" type="button">Pull from Atlas</button>
-            <button class="adm-btn" id="mSaveBtn" type="button">Save connection</button>
           </div>
           <p class="adm-muted" id="mStatus">Status: not connected</p>
         </div>

@@ -1,5 +1,8 @@
 {
   "name": "delightful-baking-cooking",
   "private": true,
-  "description": "Delightful Baking & Cooking — static site with Netlify Functions"
+  "description": "Delightful Baking & Cooking — static site with Netlify Functions",
+  "dependencies": {
+    "mongodb": "^6.12.0"
+  }
 }
