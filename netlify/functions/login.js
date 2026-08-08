@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -24,7 +26,6 @@ exports.handler = async (event) => {
     try {
       params = JSON.parse(body);
     } catch (e) {
-      // try form-urlencoded fallback
       body.split("&").forEach(function (pair) {
         var kv = pair.split("=");
         if (kv.length === 2) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
@@ -35,7 +36,7 @@ exports.handler = async (event) => {
     var password = params.password || "";
 
     if (!username || !password) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing credentials", got: Object.keys(params) }) };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing credentials" }) };
     }
 
     var validUser = process.env.ADMIN_USERNAME;
@@ -46,15 +47,16 @@ exports.handler = async (event) => {
     }
 
     if (username === validUser && password === validPass) {
+      var token = crypto.randomBytes(32).toString("hex");
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ ok: true, token: "delightful-admin-" + Date.now() }),
+        body: JSON.stringify({ ok: true, token: token }),
       };
     }
 
     return { statusCode: 401, headers, body: JSON.stringify({ ok: false, error: "Wrong username or password" }) };
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: "Login failed: " + e.message }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: "Login failed" }) };
   }
 };
