@@ -126,12 +126,24 @@ window.DB = (function () {
 
   /* ---- orders (localStorage + Atlas sync via Netlify Function) ---- */
   function getOrders() {
+    /* check overlay first (Atlas data pulled on page load) */
+    var m = merged();
+    if (m && m.orders && m.orders.length) {
+      /* sync Atlas orders into localStorage so it stays consistent */
+      try { LS.setItem(ORDERS_KEY, JSON.stringify(m.orders)); } catch (e) {}
+      return m.orders;
+    }
     try { return JSON.parse(LS.getItem(ORDERS_KEY) || "[]"); }
     catch (e) { return []; }
   }
 
   function saveOrders(orders) {
     try { LS.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch (e) {}
+    /* also update overlay */
+    var m = merged();
+    m.orders = orders || [];
+    overlay = { v: 1, savedAt: new Date().toISOString(), data: m };
+    writeLS(overlay);
     /* sync to Atlas via Netlify Function */
     mongoFn("push", "orders", { items: orders || [] }).catch(function () {});
   }
