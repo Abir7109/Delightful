@@ -221,6 +221,7 @@
   /* ---------------- tabs ---------------- */
   var TABS = {
     dashboard: "Dashboard",
+    orders: "Orders",
     menu: "Menu products",
     premium: "Premium cakes",
     reviews: "Reviews",
@@ -242,12 +243,27 @@
   });
 
   /* ---------------- dashboard ---------------- */
+  function getOrders() {
+    try { return JSON.parse(localStorage.getItem("db_orders_v1") || "[]"); }
+    catch (e) { return []; }
+  }
+
+  function saveOrders(orders) {
+    try { localStorage.setItem("db_orders_v1", JSON.stringify(orders)); } catch (e) {}
+  }
+
+  var ORDER_STATUSES = ["new", "confirmed", "completed", "cancelled"];
+  var STATUS_COLORS = { new: "#e67e22", confirmed: "#2980b9", completed: "#27ae60", cancelled: "#c0392b" };
+
   function renderDashboard() {
     var avg = 0;
     if (data.reviews.length) {
       avg = data.reviews.reduce(function (a, r) { return a + (Number(r.stars) || 0); }, 0) / data.reviews.length;
     }
+    var orders = getOrders();
+    var newOrders = orders.filter(function (o) { return o.status === "new"; }).length;
     $("#statCards").innerHTML = [
+      ["Orders", orders.length + (newOrders ? " · " + newOrders + " new" : "")],
       ["Menu products", data.products.length],
       ["Premium cakes", data.premium.length],
       ["Reviews", data.reviews.length + " · avg " + avg.toFixed(1) + "★"],
@@ -270,6 +286,109 @@
           "</div></div>";
       }).join("") +
       "</div>";
+  }
+
+  /* ---------------- orders ---------------- */
+  var currentOrderFilter = "all";
+
+  function renderOrders() {
+    var orders = getOrders();
+    var filtered = currentOrderFilter === "all" ? orders : orders.filter(function (o) { return o.status === currentOrderFilter; });
+
+    if (filtered.length === 0) {
+      $("#orderList").innerHTML = '<div class="adm-card"><p class="adm-muted">No orders' + (currentOrderFilter !== "all" ? " with status \"" + currentOrderFilter + "\"" : "") + " yet.</p></div>";
+      return;
+    }
+
+    $("#orderList").innerHTML = filtered.map(function (o) {
+      var date = new Date(o.timestamp);
+      var timeStr = date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + " " + date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+      var statusColor = STATUS_COLORS[o.status] || "#888";
+      var item = o.item || {};
+      var cust = o.customer || {};
+      return '<div class="adm-item adm-order" data-oid="' + o.id + '">' +
+        '<div class="adm-item-main">' +
+          '<div class="adm-order-head">' +
+            '<b>' + esc(cust.name || "Customer") + "</b>" +
+            '<span class="adm-order-status" style="background:' + statusColor + '">' + esc(o.status) + "</span>" +
+          '</div>' +
+          '<small>' + esc(item.name || "") + " · " + esc(item.category || "") + (item.qty > 1 ? " × " + item.qty : "") + "</small>" +
+          '<small>' + esc(cust.phone || "") + (cust.date ? " · needed " + esc(cust.date) : "") + (cust.mode ? " · " + esc(cust.mode) : "") + "</small>" +
+          (item.msg ? '<small class="adm-order-msg">"' + esc(item.msg) + '"</small>' : "") +
+          '<small class="adm-muted">' + timeStr + "</small>" +
+        "</div>" +
+        '<div class="adm-item-actions adm-order-actions">' +
+          ORDER_STATUSES.map(function (s) {
+            var active = o.status === s;
+            return '<button class="adm-ico-btn' + (active ? " is-on" : "") + '" data-ostatus="' + s + '" data-oid="' + o.id + '" title="Mark ' + s + '" style="color:' + STATUS_COLORS[s] + '">' + statusIco(s) + "</button>";
+          }).join("") +
+          '<button class="adm-ico-btn danger" data-odel="' + o.id + '" title="Delete">' + delIco() + "</button>" +
+        "</div>" +
+      "</div>";
+    }).join("");
+  }
+
+  function statusIco(s) {
+    if (s === "new") return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+    if (s === "confirmed") return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    if (s === "completed") return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>';
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+  }
+
+  function bindOrders() {
+    var list = $("#orderList");
+    if (!list) return;
+    list.addEventListener("click", function (e) {
+      var statusBtn = e.target.closest("[data-ostatus]");
+      if (statusBtn) {
+        var oid = statusBtn.dataset.oid;
+        var newStatus = statusBtn.dataset.ostatus;
+        var orders = getOrders();
+        var order = orders.find(function (o) { return o.id === oid; });
+        if (order) {
+          order.status = newStatus;
+          saveOrders(orders);
+          renderOrders();
+          renderDashboard();
+          toast("Order marked as " + newStatus);
+        }
+        return;
+      }
+      var delBtn = e.target.closest("[data-odel]");
+      if (delBtn) {
+        if (!confirm("Delete this order?")) return;
+        var orders = getOrders().filter(function (o) { return o.id !== delBtn.dataset.odel; });
+        saveOrders(orders);
+        renderOrders();
+        renderDashboard();
+        toast("Order deleted");
+      }
+    });
+
+    $("[data-ofilter]", list.parentElement).forEach(function (btn) {
+      /* handled via parent toolbar, see below */
+    });
+  }
+
+  /* order filter buttons */
+  document.addEventListener("click", function (e) {
+    var fbtn = e.target.closest("[data-ofilter]");
+    if (!fbtn) return;
+    currentOrderFilter = fbtn.dataset.ofilter;
+    $$(".adm-orders-filters .adm-btn").forEach(function (b) { b.classList.toggle("is-on", b.dataset.ofilter === currentOrderFilter); });
+    renderOrders();
+  });
+
+  function clearOrdersBtnBind() {
+    var btn = $("#clearOrdersBtn");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      if (!confirm("Delete ALL orders? This cannot be undone.")) return;
+      saveOrders([]);
+      renderOrders();
+      renderDashboard();
+      toast("All orders cleared");
+    });
   }
 
   function editIco() {
@@ -702,6 +821,7 @@
   /* ---------------- global actions ---------------- */
   function renderAll() {
     renderDashboard();
+    renderOrders();
     renderProducts();
     renderPremium();
     renderReviews();
@@ -759,6 +879,8 @@
   var bootErr = null;
   try {
     bindLists();
+    bindOrders();
+    clearOrdersBtnBind();
     bindStory();
     bindHeadings();
     bindSettings();

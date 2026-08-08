@@ -375,6 +375,20 @@ body {
 .adm-toast.show { opacity: 1; transform: translate(-50%, 0); }
 .adm-toast.err { background: var(--danger); }
 
+/* ============ ORDERS ============ */
+.adm-orders-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.adm-order { flex-direction: column; align-items: flex-start !important; gap: 6px; }
+.adm-order-head { display: flex; align-items: center; gap: 8px; width: 100%; }
+.adm-order-head b { flex: 1; }
+.adm-order-status {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  color: #fff; border-radius: 999px; padding: 3px 10px;
+  letter-spacing: .03em; flex: none;
+}
+.adm-order-msg { font-style: italic; color: var(--cocoa); white-space: normal; }
+.adm-order-actions { width: 100%; justify-content: flex-start; padding-top: 4px; border-top: 1px solid var(--line); margin-top: 4px; }
+.adm-order-actions .adm-ico-btn.is-on { outline: 2px solid currentColor; outline-offset: 1px; }
+
 /* ============ MOBILE ============ */
 @media (max-width: 860px) {
   .adm-app { flex-direction: column; }

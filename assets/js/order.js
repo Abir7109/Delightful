@@ -428,6 +428,20 @@
 
     const url = FB_PAGE + "?text=" + encodeURIComponent(lines);
     toast("Opening Messenger… 📨");
+
+    /* save order to localStorage for admin tracking */
+    try {
+      var orders = JSON.parse(localStorage.getItem("db_orders_v1") || "[]");
+      orders.unshift({
+        id: "o-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+        timestamp: new Date().toISOString(),
+        status: "new",
+        customer: { name: name, phone: phone, date: date, mode: mode, address: addr },
+        item: { name: it.name, category: cat.name, finish: finish ? finish.label : "", design: designLbl, qty: state.qty, msg: state.msg, price: it.price, total: it.price == null ? null : it.price * state.qty }
+      });
+      localStorage.setItem("db_orders_v1", JSON.stringify(orders));
+    } catch (e) { /* ignore */ }
+
     window.open(url, "_blank");
     setTimeout(() => window.location.href = "index.html", 1500);
   }

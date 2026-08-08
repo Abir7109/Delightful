@@ -47,6 +47,7 @@
 
       <nav class="adm-nav" id="admNav" aria-label="Admin sections">
         <button class="adm-nav-item is-on" data-tab="dashboard">Dashboard</button>
+        <button class="adm-nav-item" data-tab="orders">Orders</button>
         <button class="adm-nav-item" data-tab="menu">Menu products</button>
         <button class="adm-nav-item" data-tab="premium">Premium cakes</button>
         <button class="adm-nav-item" data-tab="reviews">Reviews</button>
@@ -87,6 +88,21 @@
           <p class="adm-muted">Changes save to this browser (localStorage). To sync across devices, open Settings and connect MongoDB Atlas.</p>
         </div>
         <div class="adm-card" id="dashList"></div>
+      </section>
+
+      <!-- ============ ORDERS ============ -->
+      <section class="adm-panel" data-panel="orders">
+        <div class="adm-toolbar">
+          <div class="adm-orders-filters">
+            <button class="adm-btn adm-btn-sm is-on" data-ofilter="all">All</button>
+            <button class="adm-btn adm-btn-sm" data-ofilter="new">New</button>
+            <button class="adm-btn adm-btn-sm" data-ofilter="confirmed">Confirmed</button>
+            <button class="adm-btn adm-btn-sm" data-ofilter="completed">Completed</button>
+            <button class="adm-btn adm-btn-sm" data-ofilter="cancelled">Cancelled</button>
+          </div>
+          <button class="adm-btn adm-btn-danger adm-btn-sm" id="clearOrdersBtn">Clear all</button>
+        </div>
+        <div class="adm-list" id="orderList"></div>
       </section>
 
       <!-- ============ MENU ============ -->
@@ -287,7 +303,7 @@
 
   <script src="assets/data/premium.js?v=4"></script>
   <script src="assets/data/site-data.js?v=4"></script>
-  <script src="assets/js/site-store.js?v=5"></script>
-  <script src="assets/js/admin.js?v=5"></script>
+  <script src="assets/js/site-store.js?v=6"></script>
+  <script src="assets/js/admin.js?v=6"></script>
 </body>
 </html>
