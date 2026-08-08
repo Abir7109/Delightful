@@ -8,3 +8,13 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Headers = "Content-Type"
     Access-Control-Allow-Methods = "POST, OPTIONS"
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin.html"
+  to = "/admin"
+  status = 301
