@@ -1,6 +1,7 @@
 /* ============================================================
    ORDER WIZARD — 3 steps: category → design → confirm
    Visual, icon-first, mobile friendly. No text walls.
+   Premium cakes skip design step.
    ============================================================ */
 (function () {
   "use strict";
@@ -11,6 +12,29 @@
   const $ = (s, c) => (c || document).querySelector(s);
   const $$ = (s, c) => Array.prototype.slice.call((c || document).querySelectorAll(s));
   const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ------------------------------------------------------------
+     SVG ICONS — replacing all emojis
+     ------------------------------------------------------------ */
+  const ICO = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    cake: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3M12 8v3M17 8v3"/><path d="M7 4h.01M12 4h.01M17 4h.01"/></svg>',
+    upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+    gallery: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+    phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    truck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    msg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+    arrowRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    arrowLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+    sparkle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>',
+    confirm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>',
+    minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
+  };
 
   /* ------------------------------------------------------------
      1. MENU DATA — from site-data.js defaults + the admin
@@ -82,10 +106,10 @@
 
   const priceFmt = (n) => TAKA + n.toLocaleString("en-IN");
   const priceLbl = (n) => (n == null || isNaN(n)) ? "Price on request" : priceFmt(n);
-  const emojiFrom = (item) => item.ico || "🍰";
+  const isPremium = () => state.cat === "premium";
   const thumbOf = (item) => item.img
     ? `<img src="${item.img}" alt="${item.name}" loading="lazy" draggable="false">`
-    : emojiFrom(item);
+    : ICO.cake;
 
   /* ------------------------------------------------------------
      3. RENDER
@@ -93,7 +117,7 @@
   function renderCategories() {
     el.catGrid.innerHTML = CATEGORIES.map(c => `
       <button class="cat-tile ${state.cat === c.id ? "is-on" : ""}" data-cat="${c.id}" aria-pressed="${state.cat === c.id}">
-        <span class="cat-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="cat-check" aria-hidden="true">${ICO.check}</span>
         <span class="cat-ico" aria-hidden="true">${c.icon}</span>
         <span class="cat-name">${c.name}</span>
         <span class="cat-sub">${c.sub} · ${c.items.length}</span>
@@ -119,6 +143,7 @@
   function openCategory() {
     const cat = CATEGORIES.find(c => c.id === state.cat);
     if (!cat) return;
+    const prem = cat.id === "premium";
     const div = document.createElement("div");
     div.className = "prod-wrap";
     div.innerHTML = `
@@ -126,10 +151,10 @@
         <b>${cat.name}</b>
         <span>tap to pick</span>
       </div>
-      <div class="prod-grid">
+      <div class="prod-grid${prem ? " prod-grid--premium" : ""}">
         ${cat.items.map((it, i) => `
-          <button class="prod-box ${state.item === cat.id + ":" + i ? "is-on" : ""}" data-item="${cat.id}:${i}">
-            <span class="prod-ico" aria-hidden="true">${thumbOf(it)}</span>
+          <button class="prod-box${prem ? " prod-box--premium" : ""} ${state.item === cat.id + ":" + i ? "is-on" : ""}" data-item="${cat.id}:${i}">
+            <span class="prod-ico${prem ? " prod-ico--lg" : ""}" aria-hidden="true">${thumbOf(it)}</span>
             <span class="prod-meta">
               <span class="prod-name">${it.name}</span>
               <span class="prod-price">${priceLbl(it.price)}</span>
@@ -166,9 +191,15 @@
         el.msgInput.value = "";
         openCategory();
         el.pickChip.innerHTML = pickChipHTML();
-        renderFinishes();
         refreshBar();
-        goStep(2);
+        /* premium cakes skip design step — go straight to confirm */
+        if (isPremium()) {
+          state.finish = FINISHES.length > 0 ? FINISHES[0].id : "standard";
+          goStep(3);
+        } else {
+          renderFinishes();
+          goStep(2);
+        }
       });
     });
   }
@@ -220,7 +251,7 @@
     el.libGrid.innerHTML = DESIGN_LIBRARY.map((s, i) => `
       <button class="lib-item ${d && d.mode === "lib" && s.img === d.img ? "is-on" : ""}" data-lib="${i}" aria-pressed="${d && d.mode === "lib" && s.img === d.img}">
         <img src="${s.img}" alt="${s.name}" loading="lazy" draggable="false">
-        <span class="lib-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="lib-check" aria-hidden="true">${ICO.check}</span>
       </button>
     `).join("");
     $$(".lib-item", el.libGrid).forEach(btn => {
@@ -240,24 +271,27 @@
     if (!it) return;
     const finish = FINISHES.find(f => f.id === state.finish);
     const total = it.price == null ? null : it.price * state.qty;
-    const designLbl = state.design
-      ? (state.design.mode === "upload" ? `Uploaded photo (${state.design.name})` : `Gallery · ${state.design.name}`)
-      : "—";
+    const prem = cid === "premium";
+    const designLbl = prem
+      ? "Premium cake — selected from our collection"
+      : (state.design
+        ? (state.design.mode === "upload" ? "Uploaded photo (" + state.design.name + ")" : "Gallery \u00b7 " + state.design.name)
+        : "\u2014");
     el.summary.innerHTML = `
       <div class="sum-row">
         <span class="prod-ico" aria-hidden="true">${thumbOf(it)}</span>
         <span>
           <span class="sum-name">${it.name}</span>
-          <span class="sum-sub">${[cat.name, it.topic].filter(Boolean).join(" · ")}</span>
+          <span class="sum-sub">${[cat.name, it.topic].filter(Boolean).join(" \u00b7 ")}</span>
         </span>
       </div>
       <div class="sum-lines">
         <div class="sl"><span>Item</span><b>${it.name}</b></div>
-        <div class="sl"><span>Finish</span><b>${finish ? finish.label : "—"}</b></div>
+        ${!prem ? `<div class="sl"><span>Finish</span><b>${finish ? finish.label : "\u2014"}</b></div>` : ""}
         <div class="sl"><span>Design</span><b>${designLbl}</b></div>
-        <div class="sl"><span>Quantity</span><b>${state.qty} × ${priceLbl(it.price)}</b></div>
+        <div class="sl"><span>Quantity</span><b>${state.qty} \u00d7 ${priceLbl(it.price)}</b></div>
         ${state.msg ? `<div class="sl"><span>Message</span><b>${state.msg}</b></div>` : ""}
-        <div class="sl"><span>Customisation</span><b>Added ✨</b></div>
+        <div class="sl"><span>Customisation</span><b>Added ${ICO.sparkle}</b></div>
       </div>
       <div class="sum-total">
         <span>Total (estimated)</span>
@@ -272,10 +306,10 @@
     const it = cat ? cat.items[+idx] : null;
     if (it) {
       el.barTotal.textContent = priceLbl(it.price == null ? null : it.price * state.qty);
-      el.barQty.textContent = `${it.name} · qty ${state.qty}`;
+      el.barQty.textContent = it.name + " \u00b7 qty " + state.qty;
     } else {
       el.barTotal.textContent = TAKA + "0";
-      el.barQty.textContent = "—";
+      el.barQty.textContent = "\u2014";
     }
     const valid = state.step === 1 ? !!state.item : (state.step === 2 ? !!state.item : true);
     el.btnNext.disabled = !valid;
@@ -310,11 +344,11 @@
 
   el.btnNext.addEventListener("click", () => {
     if (state.step === 1) {
-      if (!state.item) return toast("Pick a cake first 🎂");
+      if (!state.item) return toast("Pick a cake first");
       goStep(2);
     } else if (state.step === 2) {
-      if (!state.finish) return toast("Pick a finish 🍰");
-      if (!state.design) return toast("Add a design — upload or gallery 🎨");
+      if (!state.finish) return toast("Pick a finish");
+      if (!state.design) return toast("Add a design \u2014 upload or gallery");
       goStep(3);
     } else {
       sendOrder();
@@ -343,7 +377,7 @@
   });
   el.designFile.addEventListener("change", () => {
     const f = el.designFile.files && el.designFile.files[0];
-    if (!f || !f.type.startsWith("image/")) return toast("That's not an image 📷");
+    if (!f || !f.type.startsWith("image/")) return toast("That's not an image");
     const reader = new FileReader();
     reader.onload = () => {
       state.design = { mode: "upload", url: reader.result, name: f.name };
@@ -392,17 +426,20 @@
     const it = cat ? cat.items[+idx] : null;
     if (!it) return;
     const finish = FINISHES.find(f => f.id === state.finish);
-    const designLbl = state.design
-      ? (state.design.mode === "upload" ? `Uploaded: ${state.design.name}` : `Gallery: ${state.design.name}`)
-      : "—";
+    const prem = cid === "premium";
+    const designLbl = prem
+      ? "Premium cake"
+      : (state.design
+        ? (state.design.mode === "upload" ? "Uploaded: " + state.design.name : "Gallery: " + state.design.name)
+        : "\u2014");
     const name = el.fName.value.trim();
     const phone = el.fPhone.value.trim();
     const date = el.fDate.value;
     const mode = $(".seg-btn.is-on") ? $(".seg-btn.is-on").dataset.mode : "pickup";
     const addr = mode === "delivery" ? el.fAddr.value.trim() : "";
 
-    if (!name) return toast("Tell us your name 💬");
-    if (!phone) return toast("Phone number please 📱");
+    if (!name) return toast("Tell us your name");
+    if (!phone) return toast("Phone number please");
 
     /* build order object */
     var order = {
@@ -420,7 +457,8 @@
         price: it.price,
         total: it.price == null ? null : it.price * state.qty,
         img: it.img || "",
-        ico: it.ico || ""
+        ico: it.ico || "",
+        premium: prem
       }
     };
 
@@ -430,6 +468,13 @@
       orders.unshift(order);
       localStorage.setItem("db_orders_v1", JSON.stringify(orders));
     } catch (e) { /* ignore */ }
+
+    /* send email notification to shop owner */
+    fetch("/.netlify/functions/send-order-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order)
+    }).catch(function () { /* non-blocking */ });
 
     /* show confirmation */
     showConfirmation(order);
@@ -442,38 +487,58 @@
     var timeStr = date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
     var confirmPane = document.createElement("section");
-    confirmPane.className = "ord-pane is-active";
+    confirmPane.className = "ord-pane is-active ord-confirm-pane";
     confirmPane.id = "confirmPane";
     confirmPane.innerHTML = `
       <div class="ord-confirm">
-        <div class="ord-confirm-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+        <div class="ord-confirm-badge">
+          <div class="ord-confirm-icon">${ICO.confirm}</div>
         </div>
-        <h1 class="ord-confirm-title">Order <em>received!</em></h1>
-        <p class="ord-confirm-sub">We'll review your order and get back to you soon.</p>
+        <h1 class="ord-confirm-title">Order <em>received</em></h1>
+        <p class="ord-confirm-sub">We\u2019ll review your order and get back to you on Messenger or phone.</p>
 
         <div class="ord-confirm-card">
-          ${it.img ? `<img class="ord-confirm-img" src="${it.img}" alt="${it.name}" loading="lazy">` : `<div class="ord-confirm-ico">${it.ico || "🍰"}</div>`}
+          ${it.img ? '<div class="ord-confirm-img-wrap"><img class="ord-confirm-img" src="' + it.img + '" alt="' + it.name + '" loading="lazy"></div>' : '<div class="ord-confirm-ico">' + ICO.cake + '</div>'}
           <div class="ord-confirm-meta">
-            <b>${it.name}</b>
-            <small>${it.category}${it.qty > 1 ? " × " + it.qty : ""}</small>
-            ${it.finish ? `<small>Finish: ${it.finish}</small>` : ""}
-            ${it.msg ? `<small>Message: "${it.msg}"</small>` : ""}
-            <small class="ord-confirm-price">${it.total != null ? "৳" + it.total.toLocaleString("en-IN") : "Price on request"}</small>
+            <b class="ord-confirm-item-name">' + it.name + '</b>
+            <span class="ord-confirm-item-cat">' + it.category + (it.qty > 1 ? " \u00d7 " + it.qty : "") + '</span>
+            ${it.finish ? '<span class="ord-confirm-item-detail">' + ICO.sparkle + ' ' + it.finish + '</span>' : ""}
+            <span class="ord-confirm-price">' + (it.total != null ? TAKA + it.total.toLocaleString("en-IN") : "Price on request") + '</span>
           </div>
         </div>
 
-        <div class="ord-confirm-details">
-          <div class="ord-confirm-row"><span>Name</span><b>${cust.name}</b></div>
-          <div class="ord-confirm-row"><span>Phone</span><b>${cust.phone}</b></div>
-          ${cust.date ? `<div class="ord-confirm-row"><span>Needed by</span><b>${cust.date}</b></div>` : ""}
-          <div class="ord-confirm-row"><span>Mode</span><b>${cust.mode === "delivery" ? "Delivery" : "Pickup"}${cust.address ? " — " + cust.address : ""}</b></div>
-          <div class="ord-confirm-row"><span>Order ID</span><small>${order.id}</small></div>
-          <div class="ord-confirm-row"><span>Date</span><small>${timeStr}</small></div>
+        <div class="ord-confirm-contact-grid">
+          <div class="ord-contact-card">
+            <span class="ord-contact-icon">${ICO.phone}</span>
+            <span class="ord-contact-label">Phone</span>
+            <b>${cust.phone}</b>
+          </div>
+          <div class="ord-contact-card">
+            <span class="ord-contact-icon">${cust.mode === "delivery" ? ICO.truck : ICO.home}</span>
+            <span class="ord-contact-label">${cust.mode === "delivery" ? "Delivery" : "Pickup"}</span>
+            <b>${cust.address || "Collect from shop"}</b>
+          </div>
+          ${cust.date ? '<div class="ord-contact-card"><span class="ord-contact-icon">' + ICO.calendar + '</span><span class="ord-contact-label">Needed by</span><b>' + cust.date + '</b></div>' : ""}
+          <div class="ord-contact-card">
+            <span class="ord-contact-icon">${ICO.edit}</span>
+            <span class="ord-contact-label">Name</span>
+            <b>${cust.name}</b>
+          </div>
+        </div>
+
+        <div class="ord-confirm-id">
+          <span>Order ID</span>
+          <code>${order.id}</code>
+          <span>${timeStr}</span>
         </div>
 
         <div class="ord-confirm-actions">
-          <a class="btn-ord btn-ord--done" href="index.html" style="text-decoration:none;text-align:center">Back to home</a>
+          <a class="btn-ord btn-ord--primary" href="index.html" style="text-decoration:none;text-align:center;display:block">
+            ${ICO.home} Back to home
+          </a>
+          <a class="btn-ord btn-ord--outline" href="${FB_PAGE}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;display:block">
+            ${ICO.send} Chat on Messenger
+          </a>
         </div>
       </div>
     `;
@@ -524,9 +589,14 @@
       renderCategories();
       openCategory();
       el.pickChip.innerHTML = pickChipHTML();
-      renderFinishes();
       refreshBar();
-      goStep(2);
+      if (cid === "premium") {
+        state.finish = FINISHES.length > 0 ? FINISHES[0].id : "standard";
+        goStep(3);
+      } else {
+        renderFinishes();
+        goStep(2);
+      }
     }
   }
 })();

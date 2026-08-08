@@ -911,6 +911,13 @@
 
   if (sessionStorage.getItem(SESSION_KEY)) {
     showApp();
+    /* auto-refresh orders every 15 seconds */
+    setInterval(function () {
+      var panel = $("#panelOrders");
+      if (panel && panel.classList.contains("is-active")) {
+        renderOrders();
+      }
+    }, 15000);
   } else {
     $("#loginView").hidden = false;
     if (bootErr) {
