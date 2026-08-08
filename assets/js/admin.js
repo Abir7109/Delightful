@@ -164,45 +164,53 @@
     }
   }
 
-  $("#loginForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var user = $("#loginUser").value.trim();
-    var pass = $("#loginPass").value;
-    var btn = $("#loginBtn");
-    btn.disabled = true;
-    btn.textContent = "Checking…";
-    $("#loginErr").hidden = true;
+  var loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var user = (document.getElementById("loginUser").value || "").trim();
+      var pass = document.getElementById("loginPass").value || "";
+      var btn = document.getElementById("loginBtn");
+      var errEl = document.getElementById("loginErr");
 
-    fetch("/.netlify/functions/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: user, password: pass })
-    })
-      .then(function (r) {
-        return r.text().then(function (t) {
-          try { return { status: r.status, data: JSON.parse(t) }; }
-          catch (e) { return { status: r.status, data: { error: "Bad response: " + t.slice(0, 120) } }; }
+      btn.disabled = true;
+      btn.textContent = "Checking\u2026";
+      errEl.hidden = true;
+
+      console.log("[login] calling /.netlify/functions/login ...");
+
+      fetch("/.netlify/functions/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass })
+      })
+        .then(function (resp) {
+          console.log("[login] HTTP", resp.status);
+          return resp.text();
+        })
+        .then(function (txt) {
+          console.log("[login] body:", txt);
+          var d;
+          try { d = JSON.parse(txt); } catch (e) { d = { error: "Bad response: " + txt.slice(0, 200) }; }
+          if (d.ok) {
+            sessionStorage.setItem(SESSION_KEY, d.token || "1");
+            showApp();
+          } else {
+            errEl.hidden = false;
+            errEl.textContent = d.error || "Wrong username or password.";
+          }
+          btn.disabled = false;
+          btn.textContent = "Sign in";
+        })
+        .catch(function (err) {
+          console.error("[login] fetch error:", err);
+          errEl.hidden = false;
+          errEl.textContent = "Could not reach login service. " + (err && err.message ? err.message : "");
+          btn.disabled = false;
+          btn.textContent = "Sign in";
         });
-      })
-      .then(function (res) {
-        var d = res.data;
-        if (res.status === 200 && d.ok) {
-          sessionStorage.setItem(SESSION_KEY, d.token || "1");
-          showApp();
-        } else {
-          $("#loginErr").hidden = false;
-          $("#loginErr").textContent = d.error || "Wrong username or password.";
-        }
-        btn.disabled = false;
-        btn.textContent = "Sign in";
-      })
-      .catch(function (err) {
-        $("#loginErr").hidden = false;
-        $("#loginErr").textContent = "Login failed: " + (err && err.message ? err.message : "network error");
-        btn.disabled = false;
-        btn.textContent = "Sign in";
-      });
-  });
+    });
+  }
 
   $("#logoutBtn").addEventListener("click", function () {
     sessionStorage.removeItem(SESSION_KEY);
