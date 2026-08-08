@@ -11,8 +11,8 @@ const DB_NAME = "delightful";
 let client = null;
 let clientPromise = null;
 
-function getClient() {
-  if (client && client.isConnected()) return Promise.resolve(client);
+async function getClient() {
+  if (client) return client;
   if (clientPromise) return clientPromise;
   client = new MongoClient(MONGO_URI, {
     maxPoolSize: 5,
