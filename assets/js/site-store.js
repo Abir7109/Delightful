@@ -54,6 +54,8 @@ window.DB = (function () {
     if (!data) return d;
     var out = {};
     Object.keys(d).forEach(function (k) { out[k] = data[k] !== undefined ? data[k] : d[k]; });
+    /* also include overlay keys not in defaults (e.g. orders from Atlas) */
+    Object.keys(data).forEach(function (k) { if (!(k in out)) out[k] = data[k]; });
     /* sanitize headings — remove any <em> tags stored from old defaults */
     if (out.headings && typeof out.headings === "object") {
       Object.keys(out.headings).forEach(function (k) {
