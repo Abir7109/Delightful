@@ -145,7 +145,9 @@ window.DB = (function () {
     overlay = { v: 1, savedAt: new Date().toISOString(), data: m };
     writeLS(overlay);
     /* sync to Atlas via Netlify Function */
-    mongoFn("push", "orders", { items: orders || [] }).catch(function () {});
+    mongoFn("push", "orders", { items: orders || [] }).catch(function (err) {
+      console.error("[Delightful] orders push failed:", err);
+    });
   }
 
   /* ---- MongoDB via Netlify Function (server-side driver) ---- */
@@ -193,20 +195,27 @@ window.DB = (function () {
           spec.fields.forEach(function (f) { if (doc[f] !== undefined) o[f] = doc[f]; });
           return { name: name, found: true, fields: o };
         })
-        .catch(function () { return { name: name, found: false }; });
+        .catch(function (err) {
+          console.error("[Delightful] pull failed for " + name + ":", err);
+          return { name: name, found: false };
+        });
     });
 
     return Promise.all(jobs).then(function (results) {
       var cur = merged();
+      var pulled = 0;
       results.forEach(function (r) {
         if (!r.found) return;
+        pulled++;
         if (r.items) { cur[r.name] = r.items; }
         else { Object.keys(r.fields).forEach(function (k) { cur[k] = r.fields[k]; }); }
       });
+      console.log("[Delightful] Atlas pull: " + pulled + "/" + Object.keys(COLLECTIONS).length + " collections synced");
       save(cur, { push: false });
       mongoState.status = "connected";
       mongoState.lastSync = new Date().toISOString();
       mongoState.error = "";
+      emit();
       return true;
     });
   }

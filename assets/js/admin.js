@@ -173,9 +173,12 @@
     renderAll();
     updateSavedAt();
     updateBadge();
-    if (DB.mongoConfigured()) {
-      DB.mongoPull().then(renderAll).catch(function () {});
-    }
+    /* wait for Atlas pull, then re-render with fresh data */
+    DB.ready.then(function () {
+      data = clone(DB.get());
+      renderAll();
+      updateBadge();
+    }).catch(function () {});
   }
 
   var loginForm = document.getElementById("loginForm");
