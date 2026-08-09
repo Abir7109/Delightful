@@ -53,7 +53,15 @@ window.DB = (function () {
     var data = o && o.data ? o.data : null;
     if (!data) return d;
     var out = {};
-    Object.keys(d).forEach(function (k) { out[k] = data[k] !== undefined ? data[k] : d[k]; });
+    var ITEMS_KEYS = ["products", "premium", "reviews", "faq"];
+    Object.keys(d).forEach(function (k) {
+      /* don't let empty arrays from overlay clobber baked-in defaults */
+      if (ITEMS_KEYS.indexOf(k) > -1 && Array.isArray(data[k]) && !data[k].length) {
+        out[k] = d[k];
+      } else {
+        out[k] = data[k] !== undefined ? data[k] : d[k];
+      }
+    });
     /* also include overlay keys not in defaults (e.g. orders from Atlas) */
     Object.keys(data).forEach(function (k) { if (!(k in out)) out[k] = data[k]; });
     /* sanitize headings — remove any <em> tags stored from old defaults */
@@ -209,7 +217,7 @@ window.DB = (function () {
       results.forEach(function (r) {
         if (!r.found) return;
         pulled++;
-        if (r.items) { cur[r.name] = r.items; }
+        if (r.items && r.items.length) { cur[r.name] = r.items; }
         else { Object.keys(r.fields).forEach(function (k) { cur[k] = r.fields[k]; }); }
       });
       console.log("[Delightful] Atlas pull: " + pulled + "/" + Object.keys(COLLECTIONS).length + " collections synced");
